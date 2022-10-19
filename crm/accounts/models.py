@@ -3,4 +3,14 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    pass
+    TEAM_CHOICES = [
+        ("Management", "Management"),
+        ("Sales", "Sales"),
+        ("Support", "Support"),
+    ]
+    team = models.CharField(
+        max_length=10,
+        choices=TEAM_CHOICES,
+        default="Support",
+        help_text="Choisir l'équipe de cet employé.",
+    )
