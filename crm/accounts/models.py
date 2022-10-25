@@ -11,6 +11,6 @@ class User(AbstractUser):
     team = models.CharField(
         max_length=10,
         choices=TEAM_CHOICES,
-        default="Support",
+        blank=True,
         help_text="Choisir l'équipe de cet employé.",
     )
