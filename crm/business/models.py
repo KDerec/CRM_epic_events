@@ -16,6 +16,13 @@ class Client(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        ordering = ["-date_created"]
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return f"{self.client_id}, {self.first_name}, {self.last_name}"
+
 
 class Event(models.Model):
     """Event model."""
@@ -30,6 +37,13 @@ class Event(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     support_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
+    class Meta:
+        ordering = ["-date_created"]
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return f"{self.event_id}, {self.event_date}"
+
 
 class Contract(models.Model):
     """Contract model."""
@@ -43,3 +57,10 @@ class Contract(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     event = models.ForeignKey(Event, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        ordering = ["-date_created"]
+
+    def __str__(self):
+        """String for representing the Model object."""
+        return f"{self.contract_id}, {self.payment_due}"
