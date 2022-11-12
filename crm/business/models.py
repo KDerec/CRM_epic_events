@@ -21,7 +21,7 @@ class Client(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"{self.client_id}, {self.first_name}, {self.last_name}"
+        return f"{self.first_name}, {self.last_name} de {self.company_name}"
 
 
 class Event(models.Model):
@@ -29,8 +29,8 @@ class Event(models.Model):
 
     event_id = models.BigAutoField(primary_key=True)
     event_status = models.BooleanField(help_text="Si événement terminé, à cocher.")
-    attendees = models.IntegerField()
-    event_date = models.DateTimeField()
+    attendees = models.PositiveIntegerField()
+    event_date = models.DateField()
     notes = models.TextField(blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
@@ -42,7 +42,7 @@ class Event(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"{self.event_id}, {self.event_date}"
+        return f"Id={self.event_id}; {self.client}; {self.event_date}"
 
 
 class Contract(models.Model):
@@ -50,17 +50,17 @@ class Contract(models.Model):
 
     contract_id = models.BigAutoField(primary_key=True)
     status = models.BooleanField(help_text="Si contrat signé, à cocher.")
-    amount = models.FloatField()
-    payment_due = models.DateTimeField()
+    amount = models.PositiveIntegerField()
+    payment_due = models.DateField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    event = models.ForeignKey(Event, null=True, on_delete=models.SET_NULL)
+    event = models.ForeignKey(Event, blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         ordering = ["-date_created"]
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"{self.contract_id}, {self.payment_due}"
+        return f"Id={self.contract_id}; {self.client}; Payment due={self.payment_due}"
