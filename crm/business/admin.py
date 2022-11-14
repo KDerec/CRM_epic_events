@@ -9,12 +9,18 @@ class CrmAdminSite(admin.AdminSite):
     index_title = "Welcome to Epic Events CRM"
 
 
+def has_superuser_permission(request):
+    return request.user.is_active and request.user.is_superuser
+
+
 crm_admin_site = CrmAdminSite(name="crm_admin_site")
 
 crm_admin_site.register(Client)
 crm_admin_site.register(Event)
 crm_admin_site.register(Contract)
 crm_admin_site.register(Group)
+
+admin.site.has_permission = has_superuser_permission
 
 admin.site.register(Client)
 admin.site.register(Event)
