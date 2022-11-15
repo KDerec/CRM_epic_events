@@ -27,6 +27,13 @@ class UserAdmin(BaseUserAdmin):
         except:
             return "N/A"
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        # exclude admin
+        return qs.exclude(id=1)
+
 
 crm_admin_site.register(User, UserAdmin)
 admin.site.register(User, UserAdmin)
