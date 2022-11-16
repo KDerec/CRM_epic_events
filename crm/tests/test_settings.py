@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 from business.models import Client, Contract, Event
@@ -8,7 +8,7 @@ from accounts.models import User
 class TestData(TestCase):
     @classmethod
     def setUpTestData(cls):
-
+        cls.client = Client()
         manager_group, created = Group.objects.get_or_create(name="Manager")
         sales_group, created = Group.objects.get_or_create(name="Sales")
         support_group, created = Group.objects.get_or_create(name="Support")
@@ -53,19 +53,19 @@ class TestData(TestCase):
                 sales_group.permissions.remove(perm)
 
         cls.manager_user = User.objects.create_user(
-            username="manager_user", password="managerpassword84"
+            username="manager_user", password="managerpassword84", is_staff=True
         )
         cls.sales_user = User.objects.create_user(
-            username="sales_user", password="salespassword84"
+            username="sales_user", password="salespassword84", is_staff=True
         )
         cls.sales_user_two = User.objects.create_user(
-            username="sales_user_two", password="salespassword84"
+            username="sales_user_two", password="salespassword84", is_staff=True
         )
         cls.support_user = User.objects.create_user(
-            username="support_user", password="supportpassword84"
+            username="support_user", password="supportpassword84", is_staff=True
         )
         cls.support_user_two = User.objects.create_user(
-            username="support_user_two", password="supportpassword84"
+            username="support_user_two", password="supportpassword84", is_staff=True
         )
 
         cls.manager_user.groups.add(manager_group)
