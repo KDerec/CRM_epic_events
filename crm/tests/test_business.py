@@ -133,3 +133,33 @@ class ContractTestCase(TestData):
             f"/business/contract/{self.contract_client_two.contract_id}/change/"
         )
         self.assertEqual(response.context["title"], "Affichage de contract")
+
+    def test_manager_can_choice_sales_contact_of_contract(self):
+        self.client.force_login(self.manager_user)
+        response = self.client.get("/business/contract/add/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(soup.find("select", id="id_sales_contact"))
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_one.contract_id}/change/"
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(soup.find("select", id="id_sales_contact"))
+
+    def test_sales_cant_choice_sales_contact_of_contract(self):
+        self.client.force_login(self.sales_user)
+        response = self.client.get("/business/contract/add/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(
+            soup.find("div", class_="form-row field-sales_contact").find(
+                "div", class_="readonly"
+            )
+        )
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_one.contract_id}/change/"
+        )
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(
+            soup.find("div", class_="form-row field-sales_contact").find(
+                "div", class_="readonly"
+            )
+        )

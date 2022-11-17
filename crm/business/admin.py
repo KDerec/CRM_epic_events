@@ -38,6 +38,17 @@ class EventAdmin(admin.ModelAdmin):
 class ContractAdmin(admin.ModelAdmin):
     readonly_fields = ("date_created", "date_updated")
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.groups.filter(name="Sales").exists():
+            if not "sales_contact" in self.readonly_fields:
+                self.readonly_fields += ("sales_contact",)
+        return self.readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if not request.user.groups.filter(name="Manager").exists():
+            obj.sales_contact = request.user
+        super().save_model(request, obj, form, change)
+
     def has_change_permission(self, request, obj=None):
         return can_change_object(self, request, obj)
 
