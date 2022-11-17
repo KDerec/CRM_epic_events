@@ -24,6 +24,13 @@ class EventAdmin(admin.ModelAdmin):
         return can_change_object(self, request, obj)
 
 
+class ContractAdmin(admin.ModelAdmin):
+    readonly_fields = ("date_created", "date_updated")
+
+    def has_change_permission(self, request, obj=None):
+        return can_change_object(self, request, obj)
+
+
 def has_superuser_permission(request):
     return request.user.is_active and request.user.is_superuser
 
@@ -66,7 +73,7 @@ crm_admin_site = CrmAdminSite(name="crm_admin_site")
 
 crm_admin_site.register(Client, ClientAdmin)
 crm_admin_site.register(Event, EventAdmin)
-crm_admin_site.register(Contract)
+crm_admin_site.register(Contract, ContractAdmin)
 crm_admin_site.register(Group)
 
 admin.site.has_permission = has_superuser_permission

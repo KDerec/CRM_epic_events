@@ -66,3 +66,39 @@ class EventTestCase(TestData):
         self.assertEqual(response.context["title"], "Affichage de event")
 
 
+class ContractTestCase(TestData):
+    def test_manager_can_change_all_contract(self):
+        self.client.force_login(self.manager_user)
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_one.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Modification de contract")
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_two.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Modification de contract")
+
+    def test_support_can_view_contract(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_one.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Affichage de contract")
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_two.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Affichage de contract")
+
+    def test_sales_can_change_is_assigned_contract(self):
+        self.client.force_login(self.sales_user)
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_one.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Modification de contract")
+
+    def test_sales_cant_change_not_assigned_contract(self):
+        self.client.force_login(self.sales_user)
+        response = self.client.get(
+            f"/business/contract/{self.contract_client_two.contract_id}/change/"
+        )
+        self.assertEqual(response.context["title"], "Affichage de contract")
