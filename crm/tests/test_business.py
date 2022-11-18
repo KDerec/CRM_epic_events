@@ -262,3 +262,27 @@ class ContractTestCase(TestData):
 
         self.assertIn(self.client_one_sales_user.__str__(), client_selection_txt)
         self.assertIn(self.client_two_sales_user_two.__str__(), client_selection_txt)
+
+    def test_manager_can_choice_all_event_of_contract(self):
+        self.client.force_login(self.manager_user)
+        response = self.client.get("/business/contract/add/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        event_selection = soup.find("select", id="id_event").find_all("option")
+        event_selection_txt = []
+        for event in event_selection:
+            event_selection_txt.append(event.text)
+
+        self.assertIn(self.event_one.__str__(), event_selection_txt)
+        self.assertIn(self.event_two.__str__(), event_selection_txt)
+
+    def test_sales_cant_choice_event_of_not_assigned_client_of_contract(self):
+        self.client.force_login(self.sales_user)
+        response = self.client.get("/business/contract/add/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        event_selection = soup.find("select", id="id_event").find_all("option")
+        event_selection_txt = []
+        for event in event_selection:
+            event_selection_txt.append(event.text)
+
+        self.assertIn(self.event_one.__str__(), event_selection_txt)
+        self.assertNotIn(self.event_two.__str__(), event_selection_txt)

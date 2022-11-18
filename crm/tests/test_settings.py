@@ -95,6 +95,13 @@ class TestData(TestCase):
             client=cls.client_one_sales_user,
             support_contact=cls.support_user,
         )
+        cls.event_two = Event.objects.create(
+            event_status=False,
+            attendees=20,
+            event_date="2024-11-12",
+            client=cls.client_two_sales_user_two,
+            support_contact=cls.support_user,
+        )
         cls.contract_client_one = Contract.objects.create(
             status=False,
             amount=10000,

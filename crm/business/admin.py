@@ -73,8 +73,12 @@ class ContractAdmin(admin.ModelAdmin):
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if request.user.groups.filter(name="Sales").exists():
+            sales_user_client = Client.objects.filter(sales_contact=request.user)
             if db_field.name == "client":
-                kwargs["queryset"] = Client.objects.filter(sales_contact=request.user)
+                kwargs["queryset"] = sales_user_client
+            if db_field.name == "event":
+                kwargs["queryset"] = Event.objects.filter(client__in=sales_user_client)
+
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
