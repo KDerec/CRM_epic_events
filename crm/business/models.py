@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from accounts.models import User
 
 
@@ -64,3 +66,9 @@ class Contract(models.Model):
     def __str__(self):
         """String for representing the Model object."""
         return f"Contrat #{self.contract_id} pour {self.client} à payer le {self.payment_due}"
+
+    def clean(self):
+        if self.event.client and self.event.client != self.client:
+            raise ValidationError(
+                {"event": _("Veuillez choisir un event du même client que ce contrat.")}
+            )

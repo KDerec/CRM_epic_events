@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
+from django.core.exceptions import ValidationError
 from tests.test_settings import TestData
+from business.models import Contract
 
 
 class ClientTestCase(TestData):
@@ -286,3 +288,14 @@ class ContractTestCase(TestData):
 
         self.assertIn(self.event_one.__str__(), event_selection_txt)
         self.assertNotIn(self.event_two.__str__(), event_selection_txt)
+
+    def test_create_contract_with_client_and_event_of_different_client(self):
+        with self.assertRaises(ValidationError):
+            Contract(
+                status=False,
+                amount=10000,
+                payment_due="2022-12-12",
+                client=self.client_one_sales_user,
+                sales_contact=self.sales_user,
+                event=self.event_two,
+            ).full_clean()
