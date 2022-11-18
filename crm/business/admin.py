@@ -87,6 +87,11 @@ def can_change_object(self, request, obj):
             and obj.client.sales_contact == request.user
         ):
             return True
+        if (
+            request.user.groups.filter(name="Sales").exists()
+            and obj.client.sales_contact != request.user
+        ):
+            return False
     except:
         pass
     try:
