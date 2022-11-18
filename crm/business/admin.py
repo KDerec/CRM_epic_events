@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.models import Group
 from business.models import Client, Event, Contract
+from accounts.models import User
 
 
 class CrmAdminSite(admin.AdminSite):
@@ -35,6 +36,8 @@ class EventAdmin(admin.ModelAdmin):
         if request.user.groups.filter(name="Sales").exists():
             if db_field.name == "client":
                 kwargs["queryset"] = Client.objects.filter(sales_contact=request.user)
+        if db_field.name == "support_contact":
+            kwargs["queryset"] = User.objects.filter(groups__name__in=["Support"])
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):

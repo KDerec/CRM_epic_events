@@ -157,6 +157,21 @@ class EventTestCase(TestData):
         self.assertIn(self.client_one_sales_user.__str__(), client_selection_txt)
         self.assertIn(self.client_two_sales_user_two.__str__(), client_selection_txt)
 
+    def test_only_support_user_are_in_support_contact_selection(self):
+        self.client.force_login(self.manager_user)
+        response = self.client.get("/business/event/add/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        support_selection = soup.find("select", id="id_support_contact").find_all(
+            "option"
+        )
+        support_selection_txt = []
+        for support in support_selection:
+            support_selection_txt.append(support.text)
+
+        self.assertIn(self.support_user.__str__(), support_selection_txt)
+        self.assertIn(self.support_user_two.__str__(), support_selection_txt)
+        self.assertNotIn(self.sales_user.__str__(), support_selection_txt)
+
 
 class ContractTestCase(TestData):
     def test_manager_can_change_all_contract(self):
