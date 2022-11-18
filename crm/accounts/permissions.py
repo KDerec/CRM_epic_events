@@ -20,10 +20,6 @@ def create_group_and_permission():
     contract_permission = Permission.objects.filter(content_type=contract_ct)
     event_permission = Permission.objects.filter(content_type=event_ct)
 
-    manager_permissions = []
-    sales_permissions = []
-    support_permissions = []
-
     for perm in user_permission:
         manager_group.permissions.add(perm)
 
