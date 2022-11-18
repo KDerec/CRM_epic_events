@@ -12,6 +12,7 @@ class CrmAdminSite(admin.AdminSite):
 
 
 class ClientAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "sales_contact")
     readonly_fields = ("date_created", "date_updated")
 
     def get_readonly_fields(self, request, obj=None):
@@ -30,6 +31,13 @@ class ClientAdmin(admin.ModelAdmin):
 
 
 class EventAdmin(admin.ModelAdmin):
+    list_display = (
+        "event_id",
+        "client",
+        "event_date",
+        "support_contact",
+        "event_status",
+    )
     readonly_fields = ("date_created", "date_updated")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -53,6 +61,14 @@ class EventAdmin(admin.ModelAdmin):
 
 
 class ContractAdmin(admin.ModelAdmin):
+    list_display = (
+        "contract_id",
+        "amount",
+        "payment_due",
+        "sales_contact",
+        "event_id",
+        "status",
+    )
     readonly_fields = ("date_created", "date_updated")
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

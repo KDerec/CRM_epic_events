@@ -21,7 +21,7 @@ class Client(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"{self.first_name}, {self.last_name} de {self.company_name}"
+        return f"{self.first_name} {self.last_name} de {self.company_name}"
 
 
 class Event(models.Model):
@@ -42,7 +42,7 @@ class Event(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"Id={self.event_id}; {self.client}; {self.event_date}"
+        return f"Event #{self.event_id} pour {self.client} le {self.event_date}"
 
 
 class Contract(models.Model):
@@ -63,4 +63,4 @@ class Contract(models.Model):
 
     def __str__(self):
         """String for representing the Model object."""
-        return f"Id={self.contract_id}; {self.client}; Payment due={self.payment_due}"
+        return f"Contrat #{self.contract_id} pour {self.client} à payer le {self.payment_due}"
