@@ -96,6 +96,26 @@ class EventTestCase(TestData):
         response = self.client.get(f"/business/event/{self.event_one.event_id}/change/")
         self.assertEqual(response.context["title"], "Affichage de event")
 
+    def test_support_cant_choice_support_contact_of_event(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(f"/business/event/{self.event_one}/change/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(
+            soup.find("div", class_="form-row field-support_contact").find(
+                "div", class_="readonly"
+            )
+        )
+
+    def test_support_cant_choice_client_of_event(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(f"/business/event/{self.event_one}/change/")
+        soup = BeautifulSoup(response.content, "html.parser")
+        self.assertIsNotNone(
+            soup.find("div", class_="form-row field-client").find(
+                "div", class_="readonly"
+            )
+        )
+
 
 class ContractTestCase(TestData):
     def test_manager_can_change_all_contract(self):

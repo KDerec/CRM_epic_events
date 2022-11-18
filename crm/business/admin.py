@@ -31,6 +31,14 @@ class ClientAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ("date_created", "date_updated")
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.groups.filter(name="Support").exists():
+            if not "support_contact" in self.readonly_fields:
+                self.readonly_fields += ("support_contact",)
+            if not "client" in self.readonly_fields:
+                self.readonly_fields += ("client",)
+        return self.readonly_fields
+
     def has_change_permission(self, request, obj=None):
         return can_change_object(self, request, obj)
 
