@@ -65,6 +65,7 @@ For security:
 * [Python 3.9](https://www.python.org/)
 * [Django 4.1](https://www.djangoproject.com/)
 * [Django REST 3.14](https://www.django-rest-framework.org/)
+* [PostgreSQL 15](https://www.postgresql.org/)
 * [Postman](https://www.postman.com/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
