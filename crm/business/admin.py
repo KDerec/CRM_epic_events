@@ -31,6 +31,12 @@ class ClientAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     readonly_fields = ("date_created", "date_updated")
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.groups.filter(name="Sales").exists():
+            if db_field.name == "client":
+                kwargs["queryset"] = Client.objects.filter(sales_contact=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Support").exists():
             if not "support_contact" in self.readonly_fields:
@@ -45,6 +51,12 @@ class EventAdmin(admin.ModelAdmin):
 
 class ContractAdmin(admin.ModelAdmin):
     readonly_fields = ("date_created", "date_updated")
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if request.user.groups.filter(name="Sales").exists():
+            if db_field.name == "client":
+                kwargs["queryset"] = Client.objects.filter(sales_contact=request.user)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Sales").exists():
