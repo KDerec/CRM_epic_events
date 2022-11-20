@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+from rest_framework.test import APIClient
 from business.models import Client, Contract, Event
 from accounts.models import User
 
@@ -9,6 +10,7 @@ class TestData(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.client = Client()
+        cls.client_api = APIClient()
         manager_group, created = Group.objects.get_or_create(name="Manager")
         sales_group, created = Group.objects.get_or_create(name="Sales")
         support_group, created = Group.objects.get_or_create(name="Support")

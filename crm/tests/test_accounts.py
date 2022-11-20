@@ -1,8 +1,8 @@
 from tests.test_settings import TestData
 
 
-class UserTestCase(TestData):
-    def test_user_exist(self):
+class UserSiteTestCase(TestData):
+    def test_user_and_group_exist_in_db(self):
         self.assertEqual(self.support_user.username, "support_user")
         self.assertTrue(self.support_user.groups.filter(name="Support").exists())
 
@@ -10,3 +10,56 @@ class UserTestCase(TestData):
         self.client.force_login(self.manager_user)
         response = self.client.get("/")
         self.assertTrue(response.context["user"].is_authenticated)
+
+
+class UserApiTestCase(TestData):
+    def test_unlogged_user_cant_access_to_api(self):
+        response = self.client_api.get("/api/")
+        self.assertEqual(response.status_code, 403)
+
+    def test_logged_user_and_access_to_api(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.get("/api/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_manager_can_create_user_with_group_manager(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "username_name",
+                "password": "correctpassword",
+                "groups": "Manager",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "username_name1",
+                "password": "correctpassword",
+                "groups": "Sales",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "username_name2",
+                "password": "correctpassword",
+                "groups": "Support",
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+
+    def test_manager_create_user_with_wrong_data(self):
+        with self.assertRaises(ValueError):
+            self.client_api.force_authenticate(self.manager_user)
+            response = self.client_api.post(
+                "/api/users/",
+                {
+                    "username": "username_name3",
+                    "password": "correctpassword",
+                    "groups": "XXXX",
+                },
+            )
