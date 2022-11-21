@@ -11,9 +11,9 @@ class TestData(TestCase):
     def setUpTestData(cls):
         cls.client = Client()
         cls.client_api = APIClient()
-        manager_group, created = Group.objects.get_or_create(name="Manager")
-        sales_group, created = Group.objects.get_or_create(name="Sales")
-        support_group, created = Group.objects.get_or_create(name="Support")
+        cls.manager_group, created = Group.objects.get_or_create(name="Manager")
+        cls.sales_group, created = Group.objects.get_or_create(name="Sales")
+        cls.support_group, created = Group.objects.get_or_create(name="Support")
 
         user_ct = ContentType.objects.get_for_model(User)
         client_ct = ContentType.objects.get_for_model(Client)
@@ -26,34 +26,37 @@ class TestData(TestCase):
         event_permission = Permission.objects.filter(content_type=event_ct)
 
         for perm in user_permission:
-            manager_group.permissions.add(perm)
+            cls.manager_group.permissions.add(perm)
 
         for perm in client_permission:
-            manager_group.permissions.add(perm)
-            sales_group.permissions.add(perm)
+            cls.manager_group.permissions.add(perm)
+            cls.sales_group.permissions.add(perm)
             if perm.codename == "view_client":
-                support_group.permissions.add(perm)
+                cls.support_group.permissions.add(perm)
             if "delete" in perm.codename:
-                sales_group.permissions.remove(perm)
+                cls.sales_group.permissions.remove(perm)
 
         for perm in contract_permission:
-            manager_group.permissions.add(perm)
-            sales_group.permissions.add(perm)
+            cls.manager_group.permissions.add(perm)
+            cls.sales_group.permissions.add(perm)
             if perm.codename == "view_contract":
-                support_group.permissions.add(perm)
+                cls.support_group.permissions.add(perm)
             if "delete" in perm.codename:
-                sales_group.permissions.remove(perm)
+                cls.sales_group.permissions.remove(perm)
 
         for perm in event_permission:
-            manager_group.permissions.add(perm)
-            sales_group.permissions.add(perm)
+            cls.manager_group.permissions.add(perm)
+            cls.sales_group.permissions.add(perm)
             if perm.codename == "view_event":
-                support_group.permissions.add(perm)
+                cls.support_group.permissions.add(perm)
             if perm.codename == "change_event":
-                support_group.permissions.add(perm)
+                cls.support_group.permissions.add(perm)
             if "delete" in perm.codename:
-                sales_group.permissions.remove(perm)
+                cls.sales_group.permissions.remove(perm)
 
+        cls.admin_user = User.objects.create_superuser(
+            username="admin", password="admin", is_staff=True, is_superuser=True
+        )
         cls.manager_user = User.objects.create_user(
             username="manager_user", password="managerpassword84", is_staff=True
         )
@@ -70,11 +73,11 @@ class TestData(TestCase):
             username="support_user_two", password="supportpassword84", is_staff=True
         )
 
-        cls.manager_user.groups.add(manager_group)
-        cls.sales_user.groups.add(sales_group)
-        cls.sales_user_two.groups.add(sales_group)
-        cls.support_user.groups.add(support_group)
-        cls.support_user_two.groups.add(support_group)
+        cls.manager_user.groups.add(cls.manager_group)
+        cls.sales_user.groups.add(cls.sales_group)
+        cls.sales_user_two.groups.add(cls.sales_group)
+        cls.support_user.groups.add(cls.support_group)
+        cls.support_user_two.groups.add(cls.support_group)
 
         cls.client_one_sales_user = Client.objects.create(
             first_name="Henry",

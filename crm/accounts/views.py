@@ -4,15 +4,17 @@ from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.settings import api_settings
 from rest_framework.response import Response
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
+from accounts.permissions import IsSuperUser, MyDjangoModelPermissions
 from accounts.models import User
 from accounts.serializers import UserSerializer, GroupSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
 
-    queryset = User.objects.all()
+    queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
+    permission_classes = [MyDjangoModelPermissions]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -37,6 +39,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return {}
 
     def update(self, request, *args, **kwargs):
+        check_not_superuser_try_to_modify_superuser(self, request)
         try:
             group_name = request.data["groups"]
         except MultiValueDictKeyError:
@@ -57,11 +60,20 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer, group_name):
         save_and_add_user_in_group(serializer, group_name)
 
+    def retrieve(self, request, *args, **kwargs):
+        check_not_superuser_try_to_modify_superuser(self, request)
+        return super().retrieve(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        check_not_superuser_try_to_modify_superuser(self, request)
+        return super().destroy(request, *args, **kwargs)
+
 
 class GroupViewSet(viewsets.ModelViewSet):
 
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    permission_classes = [IsSuperUser | MyDjangoModelPermissions]
 
 
 def save_and_add_user_in_group(serializer, group_name):
@@ -89,3 +101,8 @@ def save_and_add_user_in_group(serializer, group_name):
         )
 
 
+def check_not_superuser_try_to_modify_superuser(self, request):
+    if self.get_object().is_superuser and not request.user.is_superuser:
+        raise PermissionDenied(
+            "Il faut être superuser pour intéragir avec cet utilisateur."
+        )

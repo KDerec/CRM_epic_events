@@ -37,12 +37,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return super().validate(attrs)
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    permissions = serializers.SerializerMethodField("get_permission_name")
+class GroupSerializer(serializers.ModelSerializer):
+    permissions_name = serializers.SerializerMethodField("get_permission_name")
 
     class Meta:
         model = Group
-        fields = ["url", "name", "permissions"]
+        fields = ["url", "name", "permissions", "permissions_name"]
+        extra_kwargs = {
+            "permissions": {"write_only": True},
+        }
 
     def get_permission_name(self, obj):
         permission_name_list = [permission.name for permission in obj.permissions.all()]

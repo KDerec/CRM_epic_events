@@ -85,6 +85,30 @@ class UserApiTestCase(TestData):
         response = self.client_api.get("/api/")
         self.assertEqual(response.status_code, 200)
 
+    def test_sales_cant_create_user(self):
+        self.client_api.force_authenticate(self.sales_user)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "usernametest",
+                "password": "correctpassword",
+                "groups": "Support",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_support_cant_create_user(self):
+        self.client_api.force_authenticate(self.support_user)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "usernametest",
+                "password": "correctpassword",
+                "groups": "Support",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
     def test_manager_can_put_groups_of_user(self):
         self.client_api.force_authenticate(self.manager_user)
         response = self.client_api.put(
@@ -108,3 +132,91 @@ class UserApiTestCase(TestData):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.support_user.groups.all()[0].__str__(), "Manager")
 
+    def test_sales_cant_update_user(self):
+        self.client_api.force_authenticate(self.sales_user)
+        response = self.client_api.put(
+            f"/api/users/{self.support_user.id}/",
+            {
+                "groups": "Manager",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Support")
+
+    def test_support_cant_update_user(self):
+        self.client_api.force_authenticate(self.support_user)
+        response = self.client_api.put(
+            f"/api/users/{self.support_user.id}/",
+            {
+                "groups": "Manager",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Support")
+
+    def test_manager_cant_interact_with_groups(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.get("/api/groups/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.get(f"/api/groups/{self.manager_group.id}/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.post("/api/groups/", {"name": "test"})
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.put(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.delete(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_sales_cant_interact_with_groups(self):
+        self.client_api.force_authenticate(self.sales_user)
+        response = self.client_api.get("/api/groups/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.get(f"/api/groups/{self.manager_group.id}/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.post("/api/groups/", {"name": "test"})
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.put(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.delete(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_support_cant_interact_with_groups(self):
+        self.client_api.force_authenticate(self.support_user)
+        response = self.client_api.get("/api/groups/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.get(f"/api/groups/{self.manager_group.id}/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.post("/api/groups/", {"name": "test"})
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.put(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.delete(
+            f"/api/groups/{self.manager_group.id}/", {"name": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_manager_cant_modify_superuser(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.get(f"/api/users/{self.admin_user.id}/")
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.patch(
+            f"/api/users/{self.admin_user.id}/",
+            {"username": "test", "groups": "Manager"},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.put(
+            f"/api/users/{self.admin_user.id}/", {"username": "test"}
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client_api.delete(f"/api/users/{self.admin_user.id}/")
+        self.assertEqual(response.status_code, 403)
