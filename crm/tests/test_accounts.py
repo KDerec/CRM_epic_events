@@ -119,7 +119,7 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Manager")
+        self.assertEqual(self.support_user.groups.get().__str__(), "Manager")
 
     def test_manager_can_patch_groups_of_user(self):
         self.client_api.force_authenticate(self.manager_user)
@@ -130,7 +130,7 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Manager")
+        self.assertEqual(self.support_user.groups.get().__str__(), "Manager")
 
     def test_sales_cant_update_user(self):
         self.client_api.force_authenticate(self.sales_user)
@@ -141,7 +141,7 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Support")
+        self.assertEqual(self.support_user.groups.get().__str__(), "Support")
 
     def test_support_cant_update_user(self):
         self.client_api.force_authenticate(self.support_user)
@@ -152,7 +152,7 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Support")
+        self.assertEqual(self.support_user.groups.get().__str__(), "Support")
 
     def test_manager_cant_interact_with_groups(self):
         self.client_api.force_authenticate(self.manager_user)

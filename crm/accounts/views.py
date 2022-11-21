@@ -85,6 +85,7 @@ def save_and_add_user_in_group(serializer, group_name):
         or group_name.upper() == "SUPPORT"
     ):
         user = serializer.save()
+        remove_user_from_all_group(user)
         user.groups.add(Group.objects.get(name=group_name))
     elif "http:" in group_name:
         user = serializer.save()
@@ -94,6 +95,7 @@ def save_and_add_user_in_group(serializer, group_name):
             group_name = "Sales"
         if "groups/3/" in group_name:
             group_name = "Sales"
+        remove_user_from_all_group(user)
         user.groups.add(Group.objects.get(name=group_name))
     else:
         raise ValidationError(
@@ -106,3 +108,9 @@ def check_not_superuser_try_to_modify_superuser(self, request):
         raise PermissionDenied(
             "Il faut être superuser pour intéragir avec cet utilisateur."
         )
+
+
+def remove_user_from_all_group(user):
+    if user.groups.exists():
+        for g in user.groups.all():
+            user.groups.remove(g)
