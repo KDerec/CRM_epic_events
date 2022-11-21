@@ -2,7 +2,7 @@ from tests.test_settings import TestData
 from accounts.models import User
 
 
-class GeneralSiteTestCase(TestData):
+class GeneralUserSiteTestCase(TestData):
     def test_user_and_group_exist_in_db(self):
         self.assertEqual(self.support_user.username, "support_user")
         self.assertTrue(self.support_user.groups.filter(name="Support").exists())
@@ -13,7 +13,7 @@ class GeneralSiteTestCase(TestData):
         self.assertTrue(response.context["user"].is_authenticated)
 
 
-class GeneralApiTestCase(TestData):
+class GeneralUserApiTestCase(TestData):
     def test_unlogged_user_cant_access_to_api(self):
         response = self.client_api.get("/api/")
         self.assertEqual(response.status_code, 403)
