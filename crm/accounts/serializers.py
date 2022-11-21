@@ -6,6 +6,11 @@ from rest_framework import serializers
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.context["request"].method == "PUT":
+            self.fields.pop("password")
+
     class Meta:
         model = User
         fields = ["url", "username", "password", "groups"]
@@ -23,10 +28,12 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return super().is_valid(raise_exception=raise_exception)
 
     def validate(self, attrs):
-        user = User(username=attrs["username"], password=attrs["password"])
-        password = attrs.get("password")
-        validate_password(password=password, user=user)
-
+        try:
+            user = User(username=attrs["username"], password=attrs["password"])
+            password = attrs.get("password")
+            validate_password(password=password, user=user)
+        except KeyError:
+            pass
         return super().validate(attrs)
 
 

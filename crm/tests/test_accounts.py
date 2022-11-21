@@ -84,3 +84,27 @@ class UserApiTestCase(TestData):
         self.client_api.force_authenticate(User.objects.get(username="username_name4"))
         response = self.client_api.get("/api/")
         self.assertEqual(response.status_code, 200)
+
+    def test_manager_can_put_groups_of_user(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.put(
+            f"/api/users/{self.support_user.id}/",
+            {
+                f"username": {self.support_user.username},
+                "groups": "Manager",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Manager")
+
+    def test_manager_can_patch_groups_of_user(self):
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.patch(
+            f"/api/users/{self.support_user.id}/",
+            {
+                "groups": "Manager",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(self.support_user.groups.all()[0].__str__(), "Manager")
+
