@@ -1,4 +1,5 @@
 from tests.test_settings import TestData
+from accounts.models import User
 
 
 class UserSiteTestCase(TestData):
@@ -33,6 +34,9 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 201)
+
+    def test_manager_can_create_user_with_group_sales(self):
+        self.client_api.force_authenticate(self.manager_user)
         response = self.client_api.post(
             "/api/users/",
             {
@@ -42,6 +46,9 @@ class UserApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 201)
+
+    def test_manager_can_create_user_with_group_support(self):
+        self.client_api.force_authenticate(self.manager_user)
         response = self.client_api.post(
             "/api/users/",
             {
@@ -53,13 +60,27 @@ class UserApiTestCase(TestData):
         self.assertEqual(response.status_code, 201)
 
     def test_manager_create_user_with_wrong_data(self):
-        with self.assertRaises(ValueError):
-            self.client_api.force_authenticate(self.manager_user)
-            response = self.client_api.post(
-                "/api/users/",
-                {
-                    "username": "username_name3",
-                    "password": "correctpassword",
-                    "groups": "XXXX",
-                },
-            )
+        self.client_api.force_authenticate(self.manager_user)
+        response = self.client_api.post(
+            "/api/users/",
+            {
+                "username": "username_name3",
+                "password": "correctpassword",
+                "groups": 1,
+            },
+        )
+        self.assertEqual(response.data[0].code, "invalid")
+
+    def test_created_manager_can_access_to_api(self):
+        self.client_api.force_authenticate(self.manager_user)
+        self.client_api.post(
+            "/api/users/",
+            {
+                "username": "username_name4",
+                "password": "correctpassword",
+                "groups": "Manager",
+            },
+        )
+        self.client_api.force_authenticate(User.objects.get(username="username_name4"))
+        response = self.client_api.get("/api/")
+        self.assertEqual(response.status_code, 200)
