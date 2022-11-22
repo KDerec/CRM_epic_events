@@ -6,7 +6,8 @@ class ClientManagerApiTestCase(TestData):
         self.client_api.force_authenticate(self.manager_user)
 
     def test_can_get_client_list(self):
-        ...
+        response = self.client_api.get("/api/clients/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_client_instance(self):
         ...
