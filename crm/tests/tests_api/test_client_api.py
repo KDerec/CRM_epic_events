@@ -70,7 +70,12 @@ class ClientManagerApiTestCase(TestData):
         ...
 
     def test_can_delete_client(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/clients/{self.client_one_sales_user.client_id}/"
+        )
+        self.assertEqual(response.status_code, 204)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(client_id=self.client_one_sales_user.client_id)
 
 
 class ClientSalesApiTestCase(TestData):
@@ -107,7 +112,15 @@ class ClientSalesApiTestCase(TestData):
         ...
 
     def test_cant_delete_client(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/clients/{self.client_one_sales_user.client_id}/"
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(
+            Client.objects.filter(
+                client_id=self.client_one_sales_user.client_id
+            ).exists()
+        )
 
 
 class ClientSupportApiTestCase(TestData):
@@ -125,13 +138,51 @@ class ClientSupportApiTestCase(TestData):
         self.assertEqual(response.status_code, 200)
 
     def test_cant_post_client(self):
-        ...
+        response = self.client_api.post(
+            "/api/clients/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+                "sales_contact": "sales_user",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(email="email@email.com")
 
     def test_cant_put_client(self):
-        ...
+        response = self.client_api.put(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+                "sales_contact": "sales_user",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.client_one_sales_user.email, "henry.paul@email.com")
 
     def test_cant_patch_client(self):
-        ...
+        response = self.client_api.put(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "email": "email@email.com",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.client_one_sales_user.email, "henry.paul@email.com")
 
     def test_cant_delete_client(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/clients/{self.client_one_sales_user.client_id}/"
+        )
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(
+            Client.objects.filter(
+                client_id=self.client_one_sales_user.client_id
+            ).exists()
+        )
