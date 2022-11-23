@@ -63,11 +63,67 @@ class ClientManagerApiTestCase(TestData):
             Client.objects.get(email="email@email.com")
 
     def test_can_put_client(self):
-        ...
+        response = self.client_api.put(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+                "sales_contact": "sales_user",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        client = Client.objects.get(email="email@email.com")
+        self.assertTrue(client)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(email="henry.paul@email.com")
+
+    def test_cant_put_client_without_sales_contact(self):
+        response = self.client_api.put(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(email="email@email.com")
+
+    def test_cant_put_client_with_unknow_sales_contact(self):
+        response = self.client_api.put(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+                "sales_contact": "unknow_username",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(email="email@email.com")
 
     def test_can_patch_client(self):
-        # avec n'importe quels sales contact
-        ...
+        response = self.client_api.patch(
+            f"/api/clients/{self.client_one_sales_user.client_id}/",
+            {
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "email@email.com",
+                "company_name": "Company Name",
+                "sales_contact": "sales_user",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        client = Client.objects.get(email="email@email.com")
+        self.assertTrue(client)
+        with self.assertRaises(Client.DoesNotExist):
+            Client.objects.get(email="henry.paul@email.com")
 
     def test_can_delete_client(self):
         response = self.client_api.delete(

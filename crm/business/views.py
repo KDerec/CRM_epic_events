@@ -33,23 +33,29 @@ class ClientViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer, sales_contact):
-        if sales_contact == "is_empty":
-            raise ValidationError("Veuillez renseigner un sales contact.")
+        save_serializer_and_client_sales_contact(serializer, sales_contact)
 
-        if User.objects.filter(username=sales_contact).exists():
-            client = serializer.save()
-            client.sales_contact = User.objects.get(username=sales_contact)
-            client.save()
+    def update(self, request, *args, **kwargs):
+        try:
+            sales_contact = request.data["sales_contact"]
+        except MultiValueDictKeyError:
+            sales_contact = "is_empty"
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer, sales_contact)
+        serializer.save()
 
-        elif "http" in sales_contact:
-            client = serializer.save()
-            sales_contact_id = sales_contact.split("/")[-2]
-            client.sales_contact = User.objects.get(id=sales_contact_id)
-            client.save()
-        else:
-            raise ValidationError(
-                "Veuillez renseigner un 'username' de 'sales contact' valide."
-            )
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer, sales_contact):
+        save_serializer_and_client_sales_contact(serializer, sales_contact)
 
 
 class ContractViewSet(viewsets.ModelViewSet):
@@ -64,3 +70,23 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [MyDjangoModelPermissions]
+
+
+def save_serializer_and_client_sales_contact(serializer, sales_contact):
+    if sales_contact == "is_empty":
+        raise ValidationError("Veuillez renseigner un sales contact.")
+
+    if User.objects.filter(username=sales_contact).exists():
+        client = serializer.save()
+        client.sales_contact = User.objects.get(username=sales_contact)
+        client.save()
+
+    elif "http" in sales_contact:
+        client = serializer.save()
+        sales_contact_id = sales_contact.split("/")[-2]
+        client.sales_contact = User.objects.get(id=sales_contact_id)
+        client.save()
+    else:
+        raise ValidationError(
+            "Veuillez renseigner un 'username' de 'sales contact' valide."
+        )
