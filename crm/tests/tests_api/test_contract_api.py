@@ -6,10 +6,18 @@ class ContractManagerApiTestCase(TestData):
         self.client_api.force_authenticate(self.manager_user)
 
     def test_can_get_contract_list(self):
-        ...
+        response = self.client_api.get("/api/contracts/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_contract_instance(self):
-        ...
+        response = self.client_api.get(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_cant_get_unknow_contract_id(self):
+        response = self.client_api.get("/api/contracts/99/")
+        self.assertEqual(response.status_code, 404)
 
     def test_can_post_contract(self):
         response = self.client_api.post(
@@ -132,10 +140,14 @@ class ContractSalesApiTestCase(TestData):
         self.client_api.force_authenticate(self.sales_user)
 
     def test_can_get_contract_list(self):
-        ...
+        response = self.client_api.get("/api/contracts/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_contract_instance(self):
-        ...
+        response = self.client_api.get(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_can_post_contract(self):
         ...
@@ -173,10 +185,14 @@ class ContractSupportApiTestCase(TestData):
         self.client_api.force_authenticate(self.support_user)
 
     def test_can_get_contract_list(self):
-        ...
+        response = self.client_api.get("/api/contracts/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_contract_instance(self):
-        ...
+        response = self.client_api.get(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_cant_post_contract(self):
         ...

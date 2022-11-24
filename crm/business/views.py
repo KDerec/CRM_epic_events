@@ -12,6 +12,7 @@ from business.serializers import (
     ClientSerializer,
     ClientSerializerForSales,
     ContractSerializer,
+    ContractSerializerForSales,
     EventSerializer,
 )
 
@@ -86,6 +87,12 @@ class ContractViewSet(viewsets.ModelViewSet):
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
     permission_classes = [MyDjangoModelPermissions]
+
+    def get_serializer_class(self):
+        if self.request.user.groups.filter(name="Sales").exists():
+            return ContractSerializerForSales
+        else:
+            return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
         try:

@@ -76,6 +76,23 @@ class ContractSerializer(serializers.HyperlinkedModelSerializer):
         return super().is_valid(raise_exception=raise_exception)
 
 
+class ContractSerializerForSales(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Contract
+        fields = [
+            "url",
+            "status",
+            "amount",
+            "payment_due",
+            "client",
+            "sales_contact",
+            "event",
+        ]
+        extra_kwargs = {
+            "sales_contact": {"read_only": True},
+        }
+
+
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
