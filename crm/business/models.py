@@ -36,7 +36,7 @@ class Event(models.Model):
     notes = models.TextField(blank=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, null=True, on_delete=models.SET_NULL)
     support_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
     class Meta:
@@ -56,7 +56,7 @@ class Contract(models.Model):
     payment_due = models.DateField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_updated = models.DateTimeField(auto_now=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, null=True, on_delete=models.SET_NULL)
     sales_contact = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     event = models.ForeignKey(Event, blank=True, null=True, on_delete=models.SET_NULL)
 

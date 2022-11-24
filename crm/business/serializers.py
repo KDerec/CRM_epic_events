@@ -52,7 +52,28 @@ class ClientSerializerForSales(serializers.HyperlinkedModelSerializer):
 class ContractSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Contract
-        fields = "__all__"
+        fields = [
+            "url",
+            "status",
+            "amount",
+            "payment_due",
+            "client",
+            "sales_contact",
+            "event",
+        ]
+
+    def is_valid(self, *, raise_exception=False):
+        try:
+            self.initial_data["sales_contact"]
+            self.initial_data["client"]
+            self.initial_data["event"]
+        except MultiValueDictKeyError:
+            return super().is_valid(raise_exception=raise_exception)
+        self.initial_data._mutable = True
+        self.initial_data.pop("sales_contact")
+        self.initial_data.pop("client")
+        self.initial_data.pop("event")
+        return super().is_valid(raise_exception=raise_exception)
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
