@@ -189,34 +189,161 @@ class ContractSalesApiTestCase(TestData):
         self.assertEqual(response.status_code, 200)
 
     def test_can_post_contract(self):
-        ...
+        response = self.client_api.post(
+            "/api/contracts/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 201)
+        created_contract_id = response.data["url"].split("/")[-2]
+        contract = Contract.objects.get(contract_id=created_contract_id)
+        self.assertEqual(contract.sales_contact, self.sales_user)
+
+    def test_cant_post_contract_with_not_assigned_client(self):
+        response = self.client_api.post(
+            "/api/contracts/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_two_sales_user_two.email},
+                f"event": {self.event_two.event_id},
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
 
     def test_can_put_contract(self):
-        ...
+        response = self.client_api.put(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        contract = Contract.objects.get(
+            contract_id=self.contract_client_one.contract_id
+        )
+        self.assertEqual(contract.amount, 1)
+        self.assertEqual(contract.sales_contact, self.sales_user)
+
+    def test_cant_put_contract_of_not_assigned_client(self):
+        response = self.client_api.put(
+            f"/api/contracts/{self.contract_client_two.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_can_patch_contract(self):
-        ...
+        response = self.client_api.patch(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        contract = Contract.objects.get(
+            contract_id=self.contract_client_one.contract_id
+        )
+        self.assertEqual(contract.amount, 1)
+        self.assertEqual(contract.sales_contact, self.sales_user)
 
-    def test_cant_put_contract_with_not_assigned_client(self):
-        ...
-
-    def test_cant_patch_contract_with_not_assigned_client(self):
-        ...
+    def test_cant_patch_contract_of_not_assigned_client(self):
+        response = self.client_api.patch(
+            f"/api/contracts/{self.contract_client_two.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"sales_contact": {self.sales_user_two.username},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_cant_select_sales_contact(self):
-        # avec post, put et patch
-        ...
-
-    def test_cant_select_event_of_not_assigned_client(self):
-        # avec post, put et patch
-        ...
+        response = self.client_api.post(
+            "/api/contracts/",
+            {
+                "status": "False",
+                "amount": "999",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"sales_contact": {self.sales_user_two.username},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_cant_select_client_and_event_of_another_client(self):
-        # avec post, put et patch
-        ...
+        response = self.client_api.post(
+            "/api/contracts/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_two.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client_api.put(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_two.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client_api.patch(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_two.event_id},
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
 
     def test_cant_delete_contract(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(
+            Contract.objects.filter(
+                contract_id=self.contract_client_one.contract_id
+            ).exists()
+        )
 
 
 class ContractSupportApiTestCase(TestData):
@@ -234,13 +361,52 @@ class ContractSupportApiTestCase(TestData):
         self.assertEqual(response.status_code, 200)
 
     def test_cant_post_contract(self):
-        ...
+        response = self.client_api.post(
+            "/api/contracts/",
+            {
+                "status": "False",
+                "amount": "1234",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_cant_put_contract(self):
-        ...
+        response = self.client_api.put(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_cant_patch_contract(self):
-        ...
+        response = self.client_api.patch(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_cant_delete_contract(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(
+            Contract.objects.filter(
+                contract_id=self.contract_client_one.contract_id
+            ).exists()
+        )

@@ -88,6 +88,20 @@ class ContractViewSet(viewsets.ModelViewSet):
     serializer_class = ContractSerializer
     permission_classes = [MyDjangoModelPermissions]
 
+    def get_permissions(self):
+        if self.detail is True and self.request.method not in SAFE_METHODS:
+            try:
+                contract = Contract.objects.get(contract_id=self.kwargs["pk"])
+                user = self.request.user
+            except Contract.DoesNotExist:
+                raise Http404("Ce numéro de contract n'existe pas.")
+            if (
+                user.groups.filter(name="Sales").exists()
+                and contract.sales_contact != user
+            ):
+                raise PermissionDenied
+        return super().get_permissions()
+
     def get_serializer_class(self):
         if self.request.user.groups.filter(name="Sales").exists():
             return ContractSerializerForSales
@@ -186,7 +200,45 @@ def save_serializer_with_sales_contact(self, serializer, sales_contact):
 def save_serializer_with_sales_contact_client_event(
     self, serializer, sales_contact, client, event
 ):
-    if sales_contact == "is_empty":
+
+    if self.request.user.groups.filter(name="Sales").exists():
+        if sales_contact != "is_empty":
+            raise ValidationError(
+                "Vous ne pouvez pas modifier le champ 'sales_contact', veuillez le retirer de votre requête."
+            )
+        elif client == "is_empty":
+            raise ValidationError("Veuillez renseigner un contract.")
+
+        elif event == "is_empty":
+            raise ValidationError("Veuillez renseigner un event.")
+        try:
+            int(event)
+            client = Client.objects.get(email=client)
+            event = Event.objects.get(event_id=event)
+        except ValueError:
+            raise ValueError("Veuillez renseigner un numéro d'id pour event.")
+        except Client.DoesNotExist:
+            raise ValidationError(
+                "Veuillez renseigner un 'email' de 'client' existant."
+            )
+        except Event.DoesNotExist:
+            raise ValidationError("Veuillez renseigner un 'id' de 'event' existant.")
+
+        if client.sales_contact != self.request.user:
+            raise ValidationError("Veuillez choisir un client qui vous appartient.")
+
+        if event.client != client:
+            raise ValidationError(
+                "Veuillez choisir un event du même client que ce contrat."
+            )
+        else:
+            serializer.save(
+                sales_contact=self.request.user,
+                client=client,
+                event=event,
+            )
+
+    elif sales_contact == "is_empty":
         raise ValidationError("Veuillez renseigner un sales contact.")
 
     elif client == "is_empty":
