@@ -1,7 +1,9 @@
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
+from rest_framework.permissions import SAFE_METHODS
 from django.utils.datastructures import MultiValueDictKeyError
 from accounts.permissions import MyDjangoModelPermissions
 from accounts.models import User
@@ -19,6 +21,20 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [MyDjangoModelPermissions]
+
+    def get_permissions(self):
+        if self.detail is True and self.request.method not in SAFE_METHODS:
+            try:
+                client = Client.objects.get(client_id=self.kwargs["pk"])
+                user = self.request.user
+            except Client.DoesNotExist:
+                raise Http404("Ce numéro de client n'existe pas.")
+            if (
+                user.groups.filter(name="Sales").exists()
+                and client.sales_contact != user
+            ):
+                raise PermissionDenied
+        return super().get_permissions()
 
     def get_serializer_class(self):
         if self.request.user.groups.filter(name="Sales").exists():
@@ -40,7 +56,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer, sales_contact):
-        save_serializer_and_client_sales_contact(serializer, sales_contact)
+        save_serializer_and_client_sales_contact(self, serializer, sales_contact)
 
     def update(self, request, *args, **kwargs):
         try:
@@ -62,7 +78,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_update(self, serializer, sales_contact):
-        save_serializer_and_client_sales_contact(serializer, sales_contact)
+        save_serializer_and_client_sales_contact(self, serializer, sales_contact)
 
 
 class ContractViewSet(viewsets.ModelViewSet):
@@ -79,20 +95,25 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [MyDjangoModelPermissions]
 
 
-def save_serializer_and_client_sales_contact(serializer, sales_contact):
-    if sales_contact == "is_empty":
+def save_serializer_and_client_sales_contact(self, serializer, sales_contact):
+
+    if self.request.user.groups.filter(name="Sales").exists():
+        if sales_contact != "is_empty":
+            raise ValidationError(
+                "Vous ne pouvez pas modifier le champ 'sales_contact', veuillez le retirer de votre requête."
+            )
+        serializer.save(sales_contact=self.request.user)
+
+    elif sales_contact == "is_empty":
         raise ValidationError("Veuillez renseigner un sales contact.")
 
-    if User.objects.filter(username=sales_contact).exists():
-        client = serializer.save()
-        client.sales_contact = User.objects.get(username=sales_contact)
-        client.save()
+    elif User.objects.filter(username=sales_contact).exists():
+        client = serializer.save(sales_contact=User.objects.get(username=sales_contact))
 
     elif "http" in sales_contact:
-        client = serializer.save()
         sales_contact_id = sales_contact.split("/")[-2]
-        client.sales_contact = User.objects.get(id=sales_contact_id)
-        client.save()
+        client = serializer.save(sales_contact=User.objects.get(id=sales_contact_id))
+
     else:
         raise ValidationError(
             "Veuillez renseigner un 'username' de 'sales contact' valide."
