@@ -8,6 +8,7 @@ from accounts.models import User
 from business.models import Client, Contract, Event
 from business.serializers import (
     ClientSerializer,
+    ClientSerializerForSales,
     ContractSerializer,
     EventSerializer,
 )
@@ -18,6 +19,12 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [MyDjangoModelPermissions]
+
+    def get_serializer_class(self):
+        if self.request.user.groups.filter(name="Sales").exists():
+            return ClientSerializerForSales
+        else:
+            return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
         try:

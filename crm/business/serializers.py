@@ -29,6 +29,26 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
         return super().is_valid(raise_exception=raise_exception)
 
 
+class ClientSerializerForSales(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Client
+        fields = [
+            "url",
+            "first_name",
+            "last_name",
+            "email",
+            "phone",
+            "mobile",
+            "company_name",
+            "date_created",
+            "date_updated",
+            "sales_contact",
+        ]
+        extra_kwargs = {
+            "sales_contact": {"read_only": True},
+        }
+
+
 class ContractSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Contract
