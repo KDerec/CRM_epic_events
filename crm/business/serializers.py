@@ -127,3 +127,21 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         self.initial_data.pop("client")
         self.initial_data.pop("support_contact")
         return super().is_valid(raise_exception=raise_exception)
+
+
+class EventSerializerForSupport(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Event
+        fields = [
+            "url",
+            "event_status",
+            "attendees",
+            "event_date",
+            "notes",
+            "client",
+            "support_contact",
+        ]
+        extra_kwargs = {
+            "support_contact": {"read_only": True},
+            "client": {"read_only": True},
+        }

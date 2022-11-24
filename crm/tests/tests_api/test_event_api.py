@@ -229,27 +229,127 @@ class EventSupportApiTestCase(TestData):
         self.assertEqual(response.status_code, 200)
 
     def test_cant_post_event(self):
-        ...
+        response = self.client_api.post(
+            "/api/events/",
+            {
+                "status": "False",
+                "attendees": "20",
+                "event_date": "01/01/2023",
+                "notes": "New year party",
+                f"client": {self.client_one_sales_user.email},
+                f"support_contact": {self.support_user.username},
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_can_put_event(self):
-        ...
-
-    def test_can_patch_event(self):
-        ...
+        response = self.client_api.put(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        event = Event.objects.get(event_id=self.event_one.event_id)
+        self.assertEqual(event.attendees, 2000)
+        self.assertEqual(event.support_contact, self.support_user)
+        self.assertEqual(event.client, self.client_one_sales_user)
 
     def test_cant_put_not_assigned_event(self):
-        ...
+        response = self.client_api.put(
+            f"/api/events/{self.event_two.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_can_patch_event(self):
+        response = self.client_api.patch(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        event = Event.objects.get(event_id=self.event_one.event_id)
+        self.assertEqual(event.attendees, 2000)
+        self.assertEqual(event.support_contact, self.support_user)
+        self.assertEqual(event.client, self.client_one_sales_user)
 
     def test_cant_patch_not_assigned_event(self):
-        ...
+        response = self.client_api.patch(
+            f"/api/events/{self.event_two.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+            },
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_cant_select_support_contact(self):
-        # avec post, put et patch
-        ...
+        response = self.client_api.put(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"support_contact": {self.support_user_two.username},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client_api.patch(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"support_contact": {self.support_user_two.username},
+            },
+        )
+
+        self.assertEqual(response.status_code, 400)
 
     def test_cant_select_client(self):
-        # avec post, put et patch
-        ...
+        response = self.client_api.put(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"client": {self.client_two_sales_user_two.email},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client_api.patch(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"client": {self.client_two_sales_user_two.email},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_cant_delete_event(self):
-        ...
+        response = self.client_api.delete(f"/api/events/{self.event_one.event_id}/")
+        self.assertEqual(response.status_code, 403)
+        self.assertTrue(Event.objects.filter(event_id=self.event_one.event_id).exists())

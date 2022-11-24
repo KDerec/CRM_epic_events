@@ -14,6 +14,7 @@ from business.serializers import (
     ContractSerializer,
     ContractSerializerForSales,
     EventSerializer,
+    EventSerializerForSupport,
 )
 
 
@@ -184,7 +185,18 @@ class EventViewSet(viewsets.ModelViewSet):
                 and event.client.sales_contact != user
             ):
                 raise PermissionDenied
+            if (
+                user.groups.filter(name="Support").exists()
+                and event.support_contact != user
+            ):
+                raise PermissionDenied
         return super().get_permissions()
+
+    def get_serializer_class(self):
+        if self.request.user.groups.filter(name="Support").exists():
+            return EventSerializerForSupport
+        else:
+            return super().get_serializer_class()
 
     def create(self, request, *args, **kwargs):
         try:
@@ -209,6 +221,20 @@ class EventViewSet(viewsets.ModelViewSet):
         )
 
     def update(self, request, *args, **kwargs):
+        if self.request.user.groups.filter(name="Support").exists():
+            try:
+                if request.data["client"]:
+                    raise ValidationError("Vous ne pouvez pas modifier le client.")
+            except MultiValueDictKeyError:
+                pass
+            try:
+                if request.data["support_contact"]:
+                    raise ValidationError(
+                        "Vous ne pouvez pas modifier le support contact."
+                    )
+            except MultiValueDictKeyError:
+                pass
+            return super().update(request, *args, **kwargs)
         try:
             client = request.data["client"]
         except MultiValueDictKeyError:
@@ -230,10 +256,13 @@ class EventViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.data)
 
-    def perform_update(self, serializer, client, support_contact):
-        save_serializer_with_client_support_contact(
-            self, serializer, client, support_contact
-        )
+    def perform_update(self, serializer, client=None, support_contact=None):
+        if self.request.user.groups.filter(name="Support").exists():
+            return super().perform_update(serializer)
+        else:
+            save_serializer_with_client_support_contact(
+                self, serializer, client, support_contact
+            )
 
 
 def save_serializer_with_sales_contact(self, serializer, sales_contact):
