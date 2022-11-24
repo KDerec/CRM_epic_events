@@ -58,7 +58,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer, sales_contact):
-        save_serializer_with_sales_contact(self, serializer, sales_contact)
+        save_serializer_for_client_object(self, serializer, sales_contact)
 
     def update(self, request, *args, **kwargs):
         try:
@@ -80,91 +80,7 @@ class ClientViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def perform_update(self, serializer, sales_contact):
-        save_serializer_with_sales_contact(self, serializer, sales_contact)
-
-
-class ContractViewSet(viewsets.ModelViewSet):
-
-    queryset = Contract.objects.all()
-    serializer_class = ContractSerializer
-    permission_classes = [MyDjangoModelPermissions]
-
-    def get_permissions(self):
-        if self.detail is True and self.request.method not in SAFE_METHODS:
-            try:
-                contract = Contract.objects.get(contract_id=self.kwargs["pk"])
-                user = self.request.user
-            except Contract.DoesNotExist:
-                raise Http404("Ce numéro de contract n'existe pas.")
-            if (
-                user.groups.filter(name="Sales").exists()
-                and contract.sales_contact != user
-            ):
-                raise PermissionDenied
-        return super().get_permissions()
-
-    def get_serializer_class(self):
-        if self.request.user.groups.filter(name="Sales").exists():
-            return ContractSerializerForSales
-        else:
-            return super().get_serializer_class()
-
-    def create(self, request, *args, **kwargs):
-        try:
-            sales_contact = request.data["sales_contact"]
-        except MultiValueDictKeyError:
-            sales_contact = "is_empty"
-        try:
-            client = request.data["client"]
-        except MultiValueDictKeyError:
-            client = "is_empty"
-        try:
-            event = request.data["event"]
-        except MultiValueDictKeyError:
-            event = "is_empty"
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer, sales_contact, client, event)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
-
-    def perform_create(self, serializer, sales_contact, client, event):
-        save_serializer_with_sales_contact_client_event(
-            self, serializer, sales_contact, client, event
-        )
-
-    def update(self, request, *args, **kwargs):
-        try:
-            sales_contact = request.data["sales_contact"]
-        except MultiValueDictKeyError:
-            sales_contact = "is_empty"
-        try:
-            client = request.data["client"]
-        except MultiValueDictKeyError:
-            client = "is_empty"
-        try:
-            event = request.data["event"]
-        except MultiValueDictKeyError:
-            event = "is_empty"
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer, sales_contact, client, event)
-
-        if getattr(instance, "_prefetched_objects_cache", None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
-
-    def perform_update(self, serializer, sales_contact, client, event):
-        save_serializer_with_sales_contact_client_event(
-            self, serializer, sales_contact, client, event
-        )
+        save_serializer_for_client_object(self, serializer, sales_contact)
 
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -216,9 +132,7 @@ class EventViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer, client, support_contact):
-        save_serializer_with_client_support_contact(
-            self, serializer, client, support_contact
-        )
+        save_serializer_for_event_object(self, serializer, client, support_contact)
 
     def update(self, request, *args, **kwargs):
         if self.request.user.groups.filter(name="Support").exists():
@@ -260,12 +174,94 @@ class EventViewSet(viewsets.ModelViewSet):
         if self.request.user.groups.filter(name="Support").exists():
             return super().perform_update(serializer)
         else:
-            save_serializer_with_client_support_contact(
-                self, serializer, client, support_contact
-            )
+            save_serializer_for_event_object(self, serializer, client, support_contact)
 
 
-def save_serializer_with_sales_contact(self, serializer, sales_contact):
+class ContractViewSet(viewsets.ModelViewSet):
+
+    queryset = Contract.objects.all()
+    serializer_class = ContractSerializer
+    permission_classes = [MyDjangoModelPermissions]
+
+    def get_permissions(self):
+        if self.detail is True and self.request.method not in SAFE_METHODS:
+            try:
+                contract = Contract.objects.get(contract_id=self.kwargs["pk"])
+                user = self.request.user
+            except Contract.DoesNotExist:
+                raise Http404("Ce numéro de contract n'existe pas.")
+            if (
+                user.groups.filter(name="Sales").exists()
+                and contract.sales_contact != user
+            ):
+                raise PermissionDenied
+        return super().get_permissions()
+
+    def get_serializer_class(self):
+        if self.request.user.groups.filter(name="Sales").exists():
+            return ContractSerializerForSales
+        else:
+            return super().get_serializer_class()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            sales_contact = request.data["sales_contact"]
+        except MultiValueDictKeyError:
+            sales_contact = "is_empty"
+        try:
+            client = request.data["client"]
+        except MultiValueDictKeyError:
+            client = "is_empty"
+        try:
+            event = request.data["event"]
+        except MultiValueDictKeyError:
+            event = "is_empty"
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, sales_contact, client, event)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    def perform_create(self, serializer, sales_contact, client, event):
+        save_serializer_for_contract_object(
+            self, serializer, sales_contact, client, event
+        )
+
+    def update(self, request, *args, **kwargs):
+        try:
+            sales_contact = request.data["sales_contact"]
+        except MultiValueDictKeyError:
+            sales_contact = "is_empty"
+        try:
+            client = request.data["client"]
+        except MultiValueDictKeyError:
+            client = "is_empty"
+        try:
+            event = request.data["event"]
+        except MultiValueDictKeyError:
+            event = "is_empty"
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer, sales_contact, client, event)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+    def perform_update(self, serializer, sales_contact, client, event):
+        save_serializer_for_contract_object(
+            self, serializer, sales_contact, client, event
+        )
+
+
+def save_serializer_for_client_object(self, serializer, sales_contact):
     if self.request.user.groups.filter(name="Sales").exists():
         if sales_contact != "is_empty":
             raise ValidationError(
@@ -289,9 +285,7 @@ def save_serializer_with_sales_contact(self, serializer, sales_contact):
         )
 
 
-def save_serializer_with_client_support_contact(
-    self, serializer, client, support_contact
-):
+def save_serializer_for_event_object(self, serializer, client, support_contact):
     if client == "is_empty":
         raise ValidationError("Veuillez renseigner un contract.")
 
@@ -332,9 +326,7 @@ def save_serializer_with_client_support_contact(
             )
 
 
-def save_serializer_with_sales_contact_client_event(
-    self, serializer, sales_contact, client, event
-):
+def save_serializer_for_contract_object(self, serializer, sales_contact, client, event):
 
     if self.request.user.groups.filter(name="Sales").exists():
         if sales_contact != "is_empty":
