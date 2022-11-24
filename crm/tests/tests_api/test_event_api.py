@@ -18,8 +18,18 @@ class EventManagerApiTestCase(TestData):
         self.assertEqual(response.status_code, 404)
 
     def test_can_post_event(self):
-        # avec n'importe quels client ou support_contact
-        ...
+        response = self.client_api.post(
+            "/api/events/",
+            {
+                "status": "False",
+                "attendees": "20",
+                "event_date": "01/01/2023",
+                "notes": "New year party",
+                f"client": {self.client_one_sales_user.email},
+                f"support_contact": {self.support_user.username},
+            },
+        )
+        self.assertEqual(response.status_code, 201)
 
     def test_can_put_event(self):
         # avec n'importe quels client ou support_contact

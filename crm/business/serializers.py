@@ -107,4 +107,23 @@ class ContractSerializerForSales(serializers.HyperlinkedModelSerializer):
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
-        fields = "__all__"
+        fields = [
+            "url",
+            "event_status",
+            "attendees",
+            "event_date",
+            "notes",
+            "client",
+            "support_contact",
+        ]
+
+    def is_valid(self, *, raise_exception=False):
+        try:
+            self.initial_data["client"]
+            self.initial_data["support_contact"]
+        except MultiValueDictKeyError:
+            return super().is_valid(raise_exception=raise_exception)
+        self.initial_data._mutable = True
+        self.initial_data.pop("client")
+        self.initial_data.pop("support_contact")
+        return super().is_valid(raise_exception=raise_exception)

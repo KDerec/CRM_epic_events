@@ -172,6 +172,28 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [MyDjangoModelPermissions]
 
+    def create(self, request, *args, **kwargs):
+        try:
+            client = request.data["client"]
+        except MultiValueDictKeyError:
+            client = "is_empty"
+        try:
+            support_contact = request.data["support_contact"]
+        except MultiValueDictKeyError:
+            support_contact = "is_empty"
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer, client, support_contact)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
+    def perform_create(self, serializer, client, support_contact):
+        save_serializer_with_client_support_contact(
+            self, serializer, client, support_contact
+        )
+
 
 def save_serializer_with_sales_contact(self, serializer, sales_contact):
     if self.request.user.groups.filter(name="Sales").exists():
@@ -197,6 +219,44 @@ def save_serializer_with_sales_contact(self, serializer, sales_contact):
         )
 
 
+def save_serializer_with_client_support_contact(
+    self, serializer, client, support_contact
+):
+    if client == "is_empty":
+        raise ValidationError("Veuillez renseigner un contract.")
+
+    elif support_contact == "is_empty":
+        raise ValidationError("Veuillez renseigner un support contact.")
+
+    elif (
+        User.objects.filter(username=support_contact).exists()
+        and Client.objects.filter(email=client).exists()
+    ):
+        serializer.save(
+            support_contact=User.objects.get(username=support_contact),
+            client=Client.objects.get(email=client),
+        )
+    elif "http" in support_contact:
+        support_contact_id = support_contact.split("/")[-2]
+        client_id = client.split("/")[-2]
+        serializer.save(
+            support_contact=User.objects.get(id=support_contact_id),
+            client=Client.objects.get(client_id=client_id),
+        )
+    else:
+        try:
+            Client.objects.get(email=client)
+            User.objects.get(username=support_contact)
+        except User.DoesNotExist:
+            raise ValidationError(
+                "Veuillez renseigner un 'username' de 'sales contact' existant."
+            )
+        except Client.DoesNotExist:
+            raise ValidationError(
+                "Veuillez renseigner un 'email' de 'client' existant."
+            )
+
+
 def save_serializer_with_sales_contact_client_event(
     self, serializer, sales_contact, client, event
 ):
@@ -207,7 +267,7 @@ def save_serializer_with_sales_contact_client_event(
                 "Vous ne pouvez pas modifier le champ 'sales_contact', veuillez le retirer de votre requête."
             )
         elif client == "is_empty":
-            raise ValidationError("Veuillez renseigner un contract.")
+            raise ValidationError("Veuillez renseigner un client.")
 
         elif event == "is_empty":
             raise ValidationError("Veuillez renseigner un event.")
@@ -242,7 +302,7 @@ def save_serializer_with_sales_contact_client_event(
         raise ValidationError("Veuillez renseigner un sales contact.")
 
     elif client == "is_empty":
-        raise ValidationError("Veuillez renseigner un contract.")
+        raise ValidationError("Veuillez renseigner un client.")
 
     elif event == "is_empty":
         raise ValidationError("Veuillez renseigner un event.")
