@@ -142,10 +142,11 @@ class SalesUserApiTestCase(TestData):
         response = self.client_api.get("/api/")
         self.assertEqual(response.status_code, 200)
 
-    def test_cant_interact_with_user_object(self):
+    def test_can_view_user(self):
         response = self.client_api.get(f"/api/users/{self.support_user.id}/")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
+    def test_cant_post_put_patch_delete_user_object(self):
         response = self.client_api.post(
             "/api/users/",
             {
@@ -201,10 +202,11 @@ class SupportUserApiTestCase(TestData):
         response = self.client_api.get("/api/")
         self.assertEqual(response.status_code, 200)
 
-    def test_cant_interact_with_user_object(self):
+    def test_can_view_user(self):
         response = self.client_api.get(f"/api/users/{self.support_user.id}/")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
 
+    def test_cant_post_put_patch_delete_user_object(self):
         response = self.client_api.post(
             "/api/users/",
             {

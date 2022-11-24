@@ -27,6 +27,9 @@ class TestData(TestCase):
 
         for perm in user_permission:
             cls.manager_group.permissions.add(perm)
+            if perm.codename == "view_user":
+                cls.sales_group.permissions.add(perm)
+                cls.support_group.permissions.add(perm)
 
         for perm in client_permission:
             cls.manager_group.permissions.add(perm)

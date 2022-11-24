@@ -44,6 +44,9 @@ def create_group_and_permission():
 
     for perm in user_permission:
         manager_group.permissions.add(perm)
+        if perm.codename == "view_user":
+            sales_group.permissions.add(perm)
+            support_group.permissions.add(perm)
 
     for perm in client_permission:
         manager_group.permissions.add(perm)

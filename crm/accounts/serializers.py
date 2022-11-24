@@ -1,8 +1,8 @@
 from django.contrib.auth.models import Group
 from django.contrib.auth.password_validation import validate_password
 from django.utils.datastructures import MultiValueDictKeyError
-from accounts.models import User
 from rest_framework import serializers
+from accounts.models import User
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
