@@ -1,4 +1,5 @@
 from tests.test_settings import TestData
+from business.models import Contract
 
 
 class ContractManagerApiTestCase(TestData):
@@ -124,15 +125,53 @@ class ContractManagerApiTestCase(TestData):
             )
 
     def test_can_put_contract(self):
-        # avec nimporte quelle sales contact, client et event
-        ...
+        response = self.client_api.put(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "1",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"sales_contact": {self.sales_user_two.username},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        contract = Contract.objects.get(
+            contract_id=self.contract_client_one.contract_id
+        )
+        self.assertEqual(contract.amount, 1)
+        self.assertEqual(contract.sales_contact, self.sales_user_two)
 
     def test_can_patch_contract(self):
-        # avec nimporte quelle sales contact, client et event
-        ...
+        response = self.client_api.patch(
+            f"/api/contracts/{self.contract_client_one.contract_id}/",
+            {
+                "status": "False",
+                "amount": "55",
+                "payment_due": "10/04/2025",
+                f"client": {self.client_one_sales_user.email},
+                f"sales_contact": {self.sales_user_two.username},
+                f"event": {self.event_one.event_id},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        contract = Contract.objects.get(
+            contract_id=self.contract_client_one.contract_id
+        )
+        self.assertEqual(contract.amount, 55)
+        self.assertEqual(contract.sales_contact, self.sales_user_two)
 
     def test_can_delete_contract(self):
-        ...
+        response = self.client_api.delete(
+            f"/api/contracts/{self.contract_client_one.contract_id}/"
+        )
+
+        self.assertFalse(
+            Contract.objects.filter(
+                contract_id=self.contract_client_one.contract_id
+            ).exists()
+        )
 
 
 class ContractSalesApiTestCase(TestData):
