@@ -172,6 +172,20 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [MyDjangoModelPermissions]
 
+    def get_permissions(self):
+        if self.detail is True and self.request.method not in SAFE_METHODS:
+            try:
+                event = Event.objects.get(event_id=self.kwargs["pk"])
+                user = self.request.user
+            except Event.DoesNotExist:
+                raise Http404("Ce numéro d'event n'existe pas.")
+            if (
+                user.groups.filter(name="Sales").exists()
+                and event.client.sales_contact != user
+            ):
+                raise PermissionDenied
+        return super().get_permissions()
+
     def create(self, request, *args, **kwargs):
         try:
             client = request.data["client"]
@@ -259,6 +273,11 @@ def save_serializer_with_client_support_contact(
         User.objects.filter(username=support_contact).exists()
         and Client.objects.filter(email=client).exists()
     ):
+        if (
+            self.request.user.groups.filter(name="Sales").exists()
+            and Client.objects.get(email=client).sales_contact != self.request.user
+        ):
+            raise ValidationError("Veuillez choisir un client qui vous appartient.")
         serializer.save(
             support_contact=User.objects.get(username=support_contact),
             client=Client.objects.get(email=client),
@@ -276,7 +295,7 @@ def save_serializer_with_client_support_contact(
             User.objects.get(username=support_contact)
         except User.DoesNotExist:
             raise ValidationError(
-                "Veuillez renseigner un 'username' de 'sales contact' existant."
+                "Veuillez renseigner un 'username' de 'support contact' existant."
             )
         except Client.DoesNotExist:
             raise ValidationError(
