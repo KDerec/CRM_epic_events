@@ -6,10 +6,16 @@ class EventManagerApiTestCase(TestData):
         self.client_api.force_authenticate(self.manager_user)
 
     def test_can_get_event_list(self):
-        ...
+        response = self.client_api.get("/api/events/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_event_instance(self):
-        ...
+        response = self.client_api.get(f"/api/events/{self.event_one.event_id}/")
+        self.assertEqual(response.status_code, 200)
+
+    def test_cant_get_unknow_contract_id(self):
+        response = self.client_api.get("/api/events/99/")
+        self.assertEqual(response.status_code, 404)
 
     def test_can_post_event(self):
         # avec n'importe quels client ou support_contact
@@ -32,10 +38,12 @@ class EventSalesApiTestCase(TestData):
         self.client_api.force_authenticate(self.sales_user)
 
     def test_can_get_event_list(self):
-        ...
+        response = self.client_api.get("/api/events/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_event_instance(self):
-        ...
+        response = self.client_api.get(f"/api/events/{self.event_one.event_id}/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_post_event(self):
         ...
@@ -64,10 +72,12 @@ class EventSupportApiTestCase(TestData):
         self.client_api.force_authenticate(self.support_user)
 
     def test_can_get_event_list(self):
-        ...
+        response = self.client_api.get("/api/events/")
+        self.assertEqual(response.status_code, 200)
 
     def test_can_get_event_instance(self):
-        ...
+        response = self.client_api.get(f"/api/events/{self.event_one.event_id}/")
+        self.assertEqual(response.status_code, 200)
 
     def test_cant_post_event(self):
         ...
