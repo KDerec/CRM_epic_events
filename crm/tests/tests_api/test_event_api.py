@@ -1,4 +1,5 @@
 from tests.test_settings import TestData
+from business.models import Event
 
 
 class EventManagerApiTestCase(TestData):
@@ -32,15 +33,45 @@ class EventManagerApiTestCase(TestData):
         self.assertEqual(response.status_code, 201)
 
     def test_can_put_event(self):
-        # avec n'importe quels client ou support_contact
-        ...
+        response = self.client_api.put(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"client": {self.client_one_sales_user.email},
+                f"support_contact": {self.support_user_two.username},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        event = Event.objects.get(event_id=self.event_one.event_id)
+        self.assertEqual(event.attendees, 2000)
+        self.assertEqual(event.support_contact, self.support_user_two)
 
     def test_can_patch_event(self):
-        # avec n'importe quels client ou support_contact
-        ...
+        response = self.client_api.patch(
+            f"/api/events/{self.event_one.event_id}/",
+            {
+                "status": "False",
+                "attendees": "2000",
+                "event_date": "01/01/2023",
+                "notes": "Giga party",
+                f"client": {self.client_one_sales_user.email},
+                f"support_contact": {self.support_user_two.username},
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        event = Event.objects.get(event_id=self.event_one.event_id)
+        self.assertEqual(event.attendees, 2000)
+        self.assertEqual(event.support_contact, self.support_user_two)
 
     def test_can_delete_event(self):
-        ...
+        response = self.client_api.delete(f"/api/events/{self.event_one.event_id}/")
+
+        self.assertFalse(
+            Event.objects.filter(event_id=self.event_one.event_id).exists()
+        )
 
 
 class EventSalesApiTestCase(TestData):
