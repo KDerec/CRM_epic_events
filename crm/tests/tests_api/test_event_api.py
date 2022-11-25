@@ -100,6 +100,20 @@ class EventSalesApiTestCase(TestData):
         )
         self.assertEqual(response.status_code, 201)
 
+    def test_cant_post_event_with_support_contact_not_in_support_group(self):
+        response = self.client_api.post(
+            "/api/events/",
+            {
+                "status": "False",
+                "attendees": "20",
+                "event_date": "01/01/2023",
+                "notes": "New year party",
+                f"client": {self.client_one_sales_user.email},
+                f"support_contact": {self.manager_user.username},
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+
     def test_cant_post_event_with_not_assigned_client(self):
         response = self.client_api.post(
             "/api/events/",

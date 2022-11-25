@@ -50,6 +50,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             data_dict["sales_contact"] = request.data["sales_contact"]
         except MultiValueDictKeyError:
             data_dict["sales_contact"] = "is_empty"
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer, data_dict)
@@ -67,6 +68,7 @@ class ClientViewSet(viewsets.ModelViewSet):
             data_dict["sales_contact"] = request.data["sales_contact"]
         except MultiValueDictKeyError:
             data_dict["sales_contact"] = "is_empty"
+
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -126,6 +128,7 @@ class EventViewSet(viewsets.ModelViewSet):
             data_dict["support_contact"] = request.data["support_contact"]
         except MultiValueDictKeyError:
             data_dict["support_contact"] = "is_empty"
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer, data_dict)
@@ -161,6 +164,7 @@ class EventViewSet(viewsets.ModelViewSet):
             data_dict["support_contact"] = request.data["support_contact"]
         except MultiValueDictKeyError:
             data_dict["support_contact"] = "is_empty"
+
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -221,6 +225,7 @@ class ContractViewSet(viewsets.ModelViewSet):
             data_dict["event"] = request.data["event"]
         except MultiValueDictKeyError:
             data_dict["event"] = "is_empty"
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer, data_dict)
@@ -246,6 +251,7 @@ class ContractViewSet(viewsets.ModelViewSet):
             data_dict["event"] = request.data["event"]
         except MultiValueDictKeyError:
             data_dict["event"] = "is_empty"
+
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -300,6 +306,14 @@ def save_serializer_for_event_object(self, serializer, data_dict):
         User.objects.filter(username=data_dict["support_contact"]).exists()
         and Client.objects.filter(email=data_dict["client"]).exists()
     ):
+        if (
+            not User.objects.get(username=data_dict["support_contact"])
+            .groups.filter(name="Support")
+            .exists()
+        ):
+            raise ValidationError(
+                "Vous ne pouvez pas choisir un support contact qui n'appartient pas au groupe support."
+            )
         if (
             self.request.user.groups.filter(name="Sales").exists()
             and Client.objects.get(email=data_dict["client"]).sales_contact
