@@ -17,6 +17,8 @@ class ClientSerializer(serializers.HyperlinkedModelSerializer):
             "date_created",
             "date_updated",
             "sales_contact",
+            "date_created",
+            "date_updated",
         ]
 
     def is_valid(self, *, raise_exception=False):
@@ -43,6 +45,8 @@ class ClientSerializerForSales(serializers.HyperlinkedModelSerializer):
             "date_created",
             "date_updated",
             "sales_contact",
+            "date_created",
+            "date_updated",
         ]
         extra_kwargs = {
             "sales_contact": {"read_only": True},
@@ -60,6 +64,8 @@ class ContractSerializer(serializers.HyperlinkedModelSerializer):
             "client",
             "sales_contact",
             "event",
+            "date_created",
+            "date_updated",
         ]
 
     def is_valid(self, *, raise_exception=False):
@@ -87,6 +93,8 @@ class ContractSerializerForSales(serializers.HyperlinkedModelSerializer):
             "client",
             "sales_contact",
             "event",
+            "date_created",
+            "date_updated",
         ]
         extra_kwargs = {
             "sales_contact": {"read_only": True},
@@ -115,6 +123,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
             "notes",
             "client",
             "support_contact",
+            "date_created",
+            "date_updated",
         ]
 
     def is_valid(self, *, raise_exception=False):
@@ -140,6 +150,8 @@ class EventSerializerForSupport(serializers.HyperlinkedModelSerializer):
             "notes",
             "client",
             "support_contact",
+            "date_created",
+            "date_updated",
         ]
         extra_kwargs = {
             "support_contact": {"read_only": True},
