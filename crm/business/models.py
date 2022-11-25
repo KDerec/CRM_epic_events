@@ -68,7 +68,14 @@ class Contract(models.Model):
         return f"Contrat #{self.contract_id} pour {self.client} à payer le {self.payment_due}"
 
     def clean(self):
-        if self.event.client and self.event.client != self.client:
-            raise ValidationError(
-                {"event": _("Veuillez choisir un event du même client que ce contrat.")}
-            )
+        try:
+            if self.event.client and self.event.client != self.client:
+                raise ValidationError(
+                    {
+                        "event": _(
+                            "Veuillez choisir un event du même client que ce contrat."
+                        )
+                    }
+                )
+        except AttributeError:
+            raise ValidationError({"event": _("Veuillez choisir un event.")})
