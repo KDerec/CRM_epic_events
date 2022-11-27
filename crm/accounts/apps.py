@@ -1,3 +1,4 @@
+import sys
 from django.apps import AppConfig
 
 
@@ -6,6 +7,7 @@ class AccountsConfig(AppConfig):
     name = "accounts"
 
     def ready(self):
-        from accounts.permissions import create_group_and_permission
+        if not "migrate" in sys.argv:
+            from accounts.permissions import create_group_and_permission
 
-        create_group_and_permission()
+            create_group_and_permission()
