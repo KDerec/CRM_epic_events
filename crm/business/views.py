@@ -354,32 +354,52 @@ def save_serializer_for_contract_object(self, serializer, data_dict):
             )
         data_dict.pop("sales_contact")
         check_value_isnt_empty(data_dict)
-        try:
-            int(data_dict["event"])
-            client = Client.objects.get(email=data_dict["client"])
-            event = Event.objects.get(event_id=data_dict["event"])
-        except ValueError:
-            raise ValueError("Veuillez renseigner un numéro d'id pour event.")
-        except Client.DoesNotExist:
-            raise ValidationError(
-                "Veuillez renseigner un 'email' de 'client' existant."
-            )
-        except Event.DoesNotExist:
-            raise ValidationError("Veuillez renseigner un 'id' de 'event' existant.")
-
-        if client.sales_contact != self.request.user:
-            raise ValidationError("Veuillez choisir un client qui vous appartient.")
-
-        if event.client != client:
-            raise ValidationError(
-                "Veuillez choisir un event du même client que ce contrat."
-            )
+        if "http" in data_dict["client"]:
+            client_id = data_dict["client"].split("/")[-2]
+            event_id = data_dict["event"].split("/")[-2]
+            client = Client.objects.get(client_id=client_id)
+            event = Event.objects.get(event_id=event_id)
+            if client.sales_contact != self.request.user:
+                raise ValidationError("Veuillez choisir un client qui vous appartient.")
+            if event.client != client:
+                raise ValidationError(
+                    "Veuillez choisir un event du même client que ce contrat."
+                )
+            else:
+                serializer.save(
+                    sales_contact=self.request.user,
+                    client=client,
+                    event=event,
+                )
         else:
-            serializer.save(
-                sales_contact=self.request.user,
-                client=client,
-                event=event,
-            )
+            try:
+                int(data_dict["event"])
+                client = Client.objects.get(email=data_dict["client"])
+                event = Event.objects.get(event_id=data_dict["event"])
+            except ValueError:
+                raise ValueError("Veuillez renseigner un numéro d'id pour event.")
+            except Client.DoesNotExist:
+                raise ValidationError(
+                    "Veuillez renseigner un 'email' de 'client' existant."
+                )
+            except Event.DoesNotExist:
+                raise ValidationError(
+                    "Veuillez renseigner un 'id' de 'event' existant."
+                )
+
+            if client.sales_contact != self.request.user:
+                raise ValidationError("Veuillez choisir un client qui vous appartient.")
+
+            if event.client != client:
+                raise ValidationError(
+                    "Veuillez choisir un event du même client que ce contrat."
+                )
+            else:
+                serializer.save(
+                    sales_contact=self.request.user,
+                    client=client,
+                    event=event,
+                )
 
     else:
         check_value_isnt_empty(data_dict)
