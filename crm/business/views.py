@@ -5,9 +5,11 @@ from rest_framework.exceptions import ValidationError, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS
 from django.utils.datastructures import MultiValueDictKeyError
+from django_filters.rest_framework import DjangoFilterBackend
 from accounts.permissions import MyDjangoModelPermissions
 from accounts.models import User
 from business.models import Client, Contract, Event
+from business.filters import ContractFilter
 from business.serializers import (
     ClientSerializer,
     ClientSerializerForSales,
@@ -23,6 +25,8 @@ class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
     permission_classes = [MyDjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["last_name", "email"]
 
     def get_permissions(self):
         if self.detail is True and self.request.method not in SAFE_METHODS:
@@ -92,6 +96,12 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [MyDjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = [
+        "client__last_name",
+        "client__email",
+        "event_date",
+    ]
 
     def get_permissions(self):
         if self.detail is True and self.request.method not in SAFE_METHODS:
@@ -190,6 +200,8 @@ class ContractViewSet(viewsets.ModelViewSet):
     queryset = Contract.objects.all()
     serializer_class = ContractSerializer
     permission_classes = [MyDjangoModelPermissions]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = ContractFilter
 
     def get_permissions(self):
         if self.detail is True and self.request.method not in SAFE_METHODS:

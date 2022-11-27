@@ -16,6 +16,12 @@ class ClientManagerApiTestCase(TestData):
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_can_get_object_with_filter_in_url(self):
+        response = self.client_api.get(
+            f"/api/clients/?last_name={self.client_one_sales_user.last_name}&email={self.client_one_sales_user.email}"
+        )
+        self.assertEqual(response.data["count"], 1)
+
     def test_cant_get_unknow_client_id(self):
         response = self.client_api.get("/api/clients/99/")
         self.assertEqual(response.status_code, 404)

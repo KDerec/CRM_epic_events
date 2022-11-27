@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import get_permission_codename
 from django.contrib.auth.models import Group
 from business.models import Client, Event, Contract
+from business.filters import RangeAmountListFilter
 from accounts.models import User
 
 
@@ -13,6 +14,10 @@ class CrmAdminSite(admin.AdminSite):
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ("__str__", "sales_contact")
+    list_filter = (
+        "email",
+        "last_name",
+    )
     readonly_fields = ("date_created", "date_updated")
 
     def get_readonly_fields(self, request, obj=None):
@@ -37,6 +42,11 @@ class EventAdmin(admin.ModelAdmin):
         "event_date",
         "support_contact",
         "event_status",
+    )
+    list_filter = (
+        "client__last_name",
+        "client__email",
+        "event_date",
     )
     readonly_fields = ("date_created", "date_updated")
 
@@ -68,6 +78,13 @@ class ContractAdmin(admin.ModelAdmin):
         "sales_contact",
         "event_id",
         "status",
+    )
+    list_filter = (
+        RangeAmountListFilter,
+        "client__last_name",
+        "client__email",
+        "date_created",
+        "amount",
     )
     readonly_fields = ("date_created", "date_updated")
 

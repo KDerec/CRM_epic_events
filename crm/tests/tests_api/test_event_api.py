@@ -14,6 +14,12 @@ class EventManagerApiTestCase(TestData):
         response = self.client_api.get(f"/api/events/{self.event_one.event_id}/")
         self.assertEqual(response.status_code, 200)
 
+    def test_can_get_object_with_filter_in_url(self):
+        response = self.client_api.get(
+            f"/api/events/?client__last_name={self.client_one_sales_user.last_name}&client__email={self.client_one_sales_user.email}&event_date={self.event_one.event_date}"
+        )
+        self.assertEqual(response.data["count"], 1)
+
     def test_cant_get_unknow_contract_id(self):
         response = self.client_api.get("/api/events/99/")
         self.assertEqual(response.status_code, 404)
