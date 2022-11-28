@@ -36,6 +36,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             pass
         return super().validate(attrs)
 
+    def create(self, validated_data):
+        validated_data.pop("groups")
+        user = User.objects.create_user(**validated_data, is_staff=True)
+        return user
+
 
 class GroupSerializer(serializers.ModelSerializer):
     permissions_name = serializers.SerializerMethodField("get_permission_name")
