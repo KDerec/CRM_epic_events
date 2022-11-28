@@ -94,7 +94,7 @@ def save_and_add_user_in_group(serializer, group_name):
         if "groups/2/" in group_name:
             group_name = "Sales"
         if "groups/3/" in group_name:
-            group_name = "Sales"
+            group_name = "Support"
         remove_user_from_all_group(user)
         user.groups.add(Group.objects.get(name=group_name))
     else:
