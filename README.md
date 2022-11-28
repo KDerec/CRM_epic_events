@@ -11,7 +11,7 @@
 <h3 align="center">Develop a secure CRM with Django & Django REST</h3>
 
   <p align="center">
-    This student project is the #9 of my training (<i>IN PROGRESS...</i>).<br>You can follow the previous one <a href="https://github.com/KDerec/Python_Testing">here</a>.
+    This student project is the #9 of my training.<br>You can follow the previous one <a href="https://github.com/KDerec/Python_Testing">here</a>.
   </p>
   </p>
 </div>
@@ -24,6 +24,7 @@
     <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#built-with">Built With</a></li>
     <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -58,8 +59,10 @@ For security:
 
 **Test** the application's **API** endpoints with **Postman**.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
+### [📙 Postman documentation](IN PROGRESS)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Built With
 * [Python 3.9](https://www.python.org/)
@@ -104,9 +107,40 @@ For security:
    ```sh
    pip install -r requirements.txt
    ```
-7. 
+7. Install [PostgreSQL](https://www.postgresql.org/download/)
+8. Open pgAdmin4
+9. Click server -> Databases and right click to create a Database ;  
+<a href="https://github.com/KDerec/CRM_epic_events/blob/master/images/create_db.jpg">
+<img src="images/create_db.jpg" width="50%" height="50%">
+</a>
 
+10. Add "crmEpicEventsDb" to Database name, click on Save button and the database is created ;  
+<a href="https://github.com/KDerec/CRM_epic_events/blob/master/images/create_db_1.jpg">
+<img src="images/create_db_1.jpg" width="50%" height="50%">
+</a>
 
+11. In CRM_epic_events/crm/crm/settings.py at line 85, change password by your PostgreSQL user password
+12. Change directory to project folder ;
+   ```sh
+   cd path/to/CRM_epic_events/crm
+   ```
+13. Run migrate ; 
+   ```sh
+   python manage.py migrate
+   ``` 
+14. Now, you have two choices: 
+    1.  Add **example data** to the database using the command below :
+    ```sh
+    python manage.py loaddata example_data.json
+    ```
+    2. Or create your own content and for this, you need to create a superuser with :
+    ```sh
+    python manage.py createsuperuser
+    ``` 
+15. Run server and log in with the created superuser or see <a href="#with-the-example-data">usage with example data</a> if you loaded the data of example_data.json ; 
+   ```sh
+   python manage.py runserver
+   ``` 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
@@ -133,6 +167,22 @@ For security:
 
 <!-- USAGE EXAMPLES -->
 ## Usage
+### With the example data
+All the password are "**changemepassword**", except for the admin for whom it's "**admin**".
+List of usernames with different roles and with wich you can log in :
+* admin
+* manager_user
+* sales_user
+* sales_user_two
+* support_user
+* support_user_two  
+
+The example data add two clients, two events and two contracts with one event + contract by clients.
+
+### Website in action
+<a href="https://github.com/KDerec/CRM_epic_events/blob/master/images/website_in_action.gif">
+<img src="images/website_in_action.gif" alt="website-in-action">
+</a>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
