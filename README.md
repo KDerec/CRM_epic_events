@@ -57,10 +57,7 @@ For security:
 * Security misconfigurations.
 * Logging and monitoring.  
 
-**Test** the application's **API** endpoints with **Postman**.
-
-
-### [📙 Postman documentation](IN PROGRESS)
+### [📙 API Postman documentation](https://documenter.getpostman.com/view/22236994/2s8YszPAVQ)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -178,6 +175,8 @@ List of usernames with different roles and with wich you can log in :
 * support_user_two  
 
 The example data add two clients, two events and two contracts with one event + contract by clients.
+
+### [📙 API Postman documentation](https://documenter.getpostman.com/view/22236994/2s8YszPAVQ)
 
 ### Website in action
 <a href="https://github.com/KDerec/CRM_epic_events/blob/master/images/website_in_action.gif">
