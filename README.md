@@ -25,6 +25,7 @@
     <li><a href="#built-with">Built With</a></li>
     <li><a href="#installation">Installation</a></li>
     <li><a href="#usage">Usage</a></li>
+    <li><a href="#tests">Tests</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -57,10 +58,7 @@ For security:
 * Security misconfigurations.
 * Logging and monitoring.  
 
-**Test** the application's **API** endpoints with **Postman**.
-
-
-### [📙 Postman documentation](IN PROGRESS)
+### [📙 API Postman documentation](https://documenter.getpostman.com/view/22236994/2s8YszPAVQ)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -179,6 +177,8 @@ List of usernames with different roles and with wich you can log in :
 
 The example data add two clients, two events and two contracts with one event + contract by clients.
 
+### [📙 API Postman documentation](https://documenter.getpostman.com/view/22236994/2s8YszPAVQ)
+
 ### Website in action
 <a href="https://github.com/KDerec/CRM_epic_events/blob/master/images/website_in_action.gif">
 <img src="images/website_in_action.gif" alt="website-in-action">
@@ -186,6 +186,24 @@ The example data add two clients, two events and two contracts with one event + 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- TESTS -->
+## Tests
+Tests are done with unitest using TestCase and APIClient from Django and Django Rest Framework.
+To run test :
+1. Change directory to project folder ;
+   ```sh
+   cd path/to/CRM_epic_events/crm
+   ```
+2. Execute command below ;
+   ```sh
+   python manage.py test tests.tests_api.test_accounts_api
+   ```
+3. (Optional) Run the command below to run a particular test, for example, test_accounts_api ;
+   ```sh
+   python manage.py test tests.tests_api.test_accounts_api
+   ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
 ## License
