@@ -5,7 +5,7 @@ from accounts.models import User
 class GeneralUserApiTestCase(TestData):
     def test_unlogged_user_cant_access_to_api(self):
         response = self.client_api.get("/api/")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
 
 class ManagerUserApiTestCase(TestData):
