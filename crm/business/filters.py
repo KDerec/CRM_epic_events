@@ -1,6 +1,6 @@
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import gettext_lazy as _
-from django_filters import FilterSet, DateFromToRangeFilter
+from django_filters import FilterSet
 from business.models import Contract
 
 
