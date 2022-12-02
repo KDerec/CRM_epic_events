@@ -22,7 +22,7 @@ class ClientAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Sales").exists():
-            if not "sales_contact" in self.readonly_fields:
+            if "sales_contact" not in self.readonly_fields:
                 self.readonly_fields += ("sales_contact",)
         return self.readonly_fields
 
@@ -60,9 +60,9 @@ class EventAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Support").exists():
-            if not "support_contact" in self.readonly_fields:
+            if "support_contact" not in self.readonly_fields:
                 self.readonly_fields += ("support_contact",)
-            if not "client" in self.readonly_fields:
+            if "client" not in self.readonly_fields:
                 self.readonly_fields += ("client",)
         return self.readonly_fields
 
@@ -100,7 +100,7 @@ class ContractAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.groups.filter(name="Sales").exists():
-            if not "sales_contact" in self.readonly_fields:
+            if "sales_contact" not in self.readonly_fields:
                 self.readonly_fields += ("sales_contact",)
         return self.readonly_fields
 

@@ -7,7 +7,7 @@ class AccountsConfig(AppConfig):
     name = "accounts"
 
     def ready(self):
-        if not "migrate" in sys.argv:
+        if "migrate" not in sys.argv:
             from accounts.permissions import create_group_and_permission
 
             create_group_and_permission()
