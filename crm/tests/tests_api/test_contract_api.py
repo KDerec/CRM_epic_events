@@ -27,9 +27,9 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user.username},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 201)
@@ -41,8 +41,8 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"sales_contact": {self.sales_user.username},
-                f"event": {self.event_one.event_id},
+                "sales_contact": {self.sales_user.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -53,8 +53,8 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -65,8 +65,8 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user.username},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -79,8 +79,8 @@ class ContractManagerApiTestCase(TestData):
                 "amount": "999",
                 "payment_due": "10/04/2025",
                 "client": "fvb15",
-                f"sales_contact": {self.sales_user.username},
-                f"event": {self.event_one.event_id},
+                "sales_contact": {self.sales_user.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -91,9 +91,9 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
+                "client": {self.client_one_sales_user.email},
                 "sales_contact": "rved51",
-                f"event": {self.event_one.event_id},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -104,8 +104,8 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user.username},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user.username},
                 "event": "99",
             },
         )
@@ -118,8 +118,8 @@ class ContractManagerApiTestCase(TestData):
                     "status": "False",
                     "amount": "999",
                     "payment_due": "10/04/2025",
-                    f"client": {self.client_one_sales_user.email},
-                    f"sales_contact": {self.sales_user.username},
+                    "client": {self.client_one_sales_user.email},
+                    "sales_contact": {self.sales_user.username},
                     "event": "eevce",
                 },
             )
@@ -131,9 +131,9 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user_two.username},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user_two.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -150,9 +150,9 @@ class ContractManagerApiTestCase(TestData):
                 "status": "False",
                 "amount": "55",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user_two.username},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user_two.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -163,7 +163,7 @@ class ContractManagerApiTestCase(TestData):
         self.assertEqual(contract.sales_contact, self.sales_user_two)
 
     def test_can_delete_contract(self):
-        response = self.client_api.delete(
+        self.client_api.delete(
             f"/api/contracts/{self.contract_client_one.contract_id}/"
         )
 
@@ -195,8 +195,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 201)
@@ -211,8 +211,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_two_sales_user_two.email},
-                f"event": {self.event_two.event_id},
+                "client": {self.client_two_sales_user_two.email},
+                "event": {self.event_two.event_id},
             },
         )
 
@@ -225,8 +225,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -243,8 +243,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -256,8 +256,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -274,9 +274,9 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user_two.username},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user_two.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -288,9 +288,9 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "999",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"sales_contact": {self.sales_user_two.username},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "sales_contact": {self.sales_user_two.username},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -302,8 +302,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_two.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_two.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -314,8 +314,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_two.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_two.event_id},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -326,8 +326,8 @@ class ContractSalesApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_two.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_two.event_id},
             },
         )
 
@@ -367,8 +367,8 @@ class ContractSupportApiTestCase(TestData):
                 "status": "False",
                 "amount": "1234",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -380,8 +380,8 @@ class ContractSupportApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -393,8 +393,8 @@ class ContractSupportApiTestCase(TestData):
                 "status": "False",
                 "amount": "1",
                 "payment_due": "10/04/2025",
-                f"client": {self.client_one_sales_user.email},
-                f"event": {self.event_one.event_id},
+                "client": {self.client_one_sales_user.email},
+                "event": {self.event_one.event_id},
             },
         )
         self.assertEqual(response.status_code, 403)

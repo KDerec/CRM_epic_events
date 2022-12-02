@@ -32,8 +32,8 @@ class EventManagerApiTestCase(TestData):
                 "attendees": "20",
                 "event_date": "01/01/2023",
                 "notes": "New year party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user.username},
             },
         )
         self.assertEqual(response.status_code, 201)
@@ -46,8 +46,8 @@ class EventManagerApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -63,8 +63,8 @@ class EventManagerApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -73,7 +73,7 @@ class EventManagerApiTestCase(TestData):
         self.assertEqual(event.support_contact, self.support_user_two)
 
     def test_can_delete_event(self):
-        response = self.client_api.delete(f"/api/events/{self.event_one.event_id}/")
+        self.client_api.delete(f"/api/events/{self.event_one.event_id}/")
 
         self.assertFalse(
             Event.objects.filter(event_id=self.event_one.event_id).exists()
@@ -100,8 +100,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "20",
                 "event_date": "01/01/2023",
                 "notes": "New year party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user.username},
             },
         )
         self.assertEqual(response.status_code, 201)
@@ -114,8 +114,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "20",
                 "event_date": "01/01/2023",
                 "notes": "New year party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.manager_user.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.manager_user.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -128,8 +128,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "20",
                 "event_date": "01/01/2023",
                 "notes": "New year party",
-                f"client": {self.client_two_sales_user_two.email},
-                f"support_contact": {self.support_user.username},
+                "client": {self.client_two_sales_user_two.email},
+                "support_contact": {self.support_user.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -142,8 +142,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -159,8 +159,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_two_sales_user_two.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -176,8 +176,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_two_sales_user_two.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -190,8 +190,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 200)
@@ -207,8 +207,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_two_sales_user_two.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -224,8 +224,8 @@ class EventSalesApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
-                f"support_contact": {self.support_user_two.username},
+                "client": {self.client_two_sales_user_two.email},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -256,8 +256,8 @@ class EventSupportApiTestCase(TestData):
                 "attendees": "20",
                 "event_date": "01/01/2023",
                 "notes": "New year party",
-                f"client": {self.client_one_sales_user.email},
-                f"support_contact": {self.support_user.username},
+                "client": {self.client_one_sales_user.email},
+                "support_contact": {self.support_user.username},
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -326,7 +326,7 @@ class EventSupportApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"support_contact": {self.support_user_two.username},
+                "support_contact": {self.support_user_two.username},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -338,7 +338,7 @@ class EventSupportApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"support_contact": {self.support_user_two.username},
+                "support_contact": {self.support_user_two.username},
             },
         )
 
@@ -352,7 +352,7 @@ class EventSupportApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
+                "client": {self.client_two_sales_user_two.email},
             },
         )
         self.assertEqual(response.status_code, 400)
@@ -364,7 +364,7 @@ class EventSupportApiTestCase(TestData):
                 "attendees": "2000",
                 "event_date": "01/01/2023",
                 "notes": "Giga party",
-                f"client": {self.client_two_sales_user_two.email},
+                "client": {self.client_two_sales_user_two.email},
             },
         )
         self.assertEqual(response.status_code, 400)

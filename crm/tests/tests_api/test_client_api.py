@@ -82,7 +82,6 @@ class ClientManagerApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 200)
-        client = Client.objects.get(email="email@email.com")
         with self.assertRaises(Client.DoesNotExist):
             Client.objects.get(email="henry.paul@email.com")
 
@@ -127,7 +126,6 @@ class ClientManagerApiTestCase(TestData):
             },
         )
         self.assertEqual(response.status_code, 200)
-        client = Client.objects.get(email="email@email.com")
         with self.assertRaises(Client.DoesNotExist):
             Client.objects.get(email="henry.paul@email.com")
 
