@@ -11,7 +11,7 @@
 <h3 align="center">Develop a secure CRM with Django & Django REST</h3>
 
   <p align="center">
-    This student project is the #9 of my training.<br>You can follow the previous one <a href="https://github.com/KDerec/Python_Testing">here</a>.
+    This student project is the #9 of my training.<br>You can follow the previous <a href="https://github.com/KDerec/Python_Testing">here</a> and next one <a href="https://github.com/KDerec/OC-Lettings">here</a>.
   </p>
   </p>
 </div>
@@ -221,4 +221,4 @@ LinkedIn : https://www.linkedin.com/in/kevin-derecusson/
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
-<i>This student project is the #9 of my training.<br>You can follow the previous one <a href="https://github.com/KDerec/Python_Testing">here</a>.</i>
+<i>This student project is the #9 of my training.<br>You can follow the previous <a href="https://github.com/KDerec/Python_Testing">here</a> and next one <a href="https://github.com/KDerec/OC-Lettings">here</a>.</i>
